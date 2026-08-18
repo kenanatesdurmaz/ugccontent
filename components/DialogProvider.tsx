@@ -58,7 +58,8 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         <div
           role="alertdialog"
           aria-modal="true"
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 px-6 backdrop-blur-sm"
+          className="fixed inset-0 flex items-center justify-center bg-black/40 px-6 backdrop-blur-sm"
+          style={{ zIndex: 2147483647 }}
           onClick={() => close(false)}
         >
           <div
