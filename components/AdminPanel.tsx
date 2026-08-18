@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useDialog } from "@/components/DialogProvider";
 
 type Settings = { generationEnabled: boolean; mode: "live" | "test" };
 
@@ -27,6 +28,7 @@ type NotificationRow = {
 };
 
 export function AdminPanel() {
+  const { confirm, notify } = useDialog();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [testModeAllowed, setTestModeAllowed] = useState(true);
   const [logs, setLogs] = useState<LogRow[] | null>(null);
@@ -76,7 +78,10 @@ export function AdminPanel() {
     const next = !settings.generationEnabled;
     if (
       !next &&
-      !confirm("Video üretimini tamamen kapatmak istediğine emin misin? Tüm kullanıcılar için devre dışı kalacak.")
+      !(await confirm(
+        "Video üretimini tamamen kapatmak istediğine emin misin? Tüm kullanıcılar için devre dışı kalacak.",
+        { title: "Video üretimini durdur", confirmLabel: "Evet, durdur", danger: true }
+      ))
     ) {
       return;
     }
@@ -85,7 +90,13 @@ export function AdminPanel() {
 
   async function setMode(mode: "live" | "test") {
     if (!settings || settings.mode === mode) return;
-    if (mode === "test" && !confirm("TEST MODE'a geçmek istediğine emin misin? Gerçek fal.ai çağrısı yapılmayacak, sahte sonuçlar üretilecek.")) {
+    if (
+      mode === "test" &&
+      !(await confirm(
+        "TEST MODE'a geçmek istediğine emin misin? Gerçek fal.ai çağrısı yapılmayacak, sahte sonuçlar üretilecek.",
+        { title: "TEST MODE'a geç", confirmLabel: "Evet, geç" }
+      ))
+    ) {
       return;
     }
     await updateSettings({ mode });
@@ -96,7 +107,7 @@ export function AdminPanel() {
     const res = await fetch("/api/admin/notifications/test", { method: "POST" });
     if (!res.ok) {
       const data = await res.json().catch(() => null);
-      alert(data?.error ?? "Test bildirimi gönderilemedi");
+      await notify(data?.error ?? "Test bildirimi gönderilemedi", "Bildirim gönderilemedi");
     }
     await refresh();
     setNotifWorking(false);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PLANS, formatCredits } from "@/lib/plans";
+import { useDialog } from "@/components/DialogProvider";
 
 type SubscriptionState = {
   plan: "starter" | "creator" | "pro";
@@ -14,6 +15,7 @@ type SubscriptionState = {
 
 /** Custom page rendered inside Clerk's "Manage account" (UserProfile) modal. */
 export function AccountSubscriptionPage() {
+  const { confirm } = useDialog();
   const [subscription, setSubscription] = useState<SubscriptionState>(null);
   const [loaded, setLoaded] = useState(false);
   const [working, setWorking] = useState(false);
@@ -33,9 +35,11 @@ export function AccountSubscriptionPage() {
   }, []);
 
   async function handleCancel() {
-    if (!confirm("Aboneliğini iptal etmek istediğine emin misin? Ödediğin dönem sonuna kadar kullanmaya devam edebilirsin.")) {
-      return;
-    }
+    const ok = await confirm(
+      "Aboneliğini iptal etmek istediğine emin misin? Ödediğin dönem sonuna kadar kullanmaya devam edebilirsin.",
+      { title: "Aboneliği iptal et", confirmLabel: "Evet, iptal et", danger: true }
+    );
+    if (!ok) return;
     setWorking(true);
     await fetch("/api/subscription/cancel", { method: "POST" });
     await refresh();

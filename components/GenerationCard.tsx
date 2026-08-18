@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Generation } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
+import { useDialog } from "@/components/DialogProvider";
 
 export function GenerationCard({
   generation,
@@ -11,6 +12,7 @@ export function GenerationCard({
   generation: Generation;
   onDeleted: () => void;
 }) {
+  const { confirm } = useDialog();
   const completedCount = generation.generation_videos.filter(
     (v) => v.status === "completed"
   ).length;
@@ -18,9 +20,12 @@ export function GenerationCard({
   async function handleDelete(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (!confirm(`"${generation.product_name}" kaydını silmek istediğine emin misin?`)) {
-      return;
-    }
+    const ok = await confirm(`"${generation.product_name}" kaydını silmek istediğine emin misin?`, {
+      title: "Kaydı sil",
+      confirmLabel: "Sil",
+      danger: true,
+    });
+    if (!ok) return;
     const res = await fetch(`/api/generations/${generation.id}`, {
       method: "DELETE",
     });

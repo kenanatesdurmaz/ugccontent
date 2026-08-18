@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Onest } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/Navbar";
+import { DialogProvider } from "@/components/DialogProvider";
 import "./globals.css";
 
 const onest = Onest({
@@ -28,8 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <html lang="en" className={`${onest.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col bg-white text-[var(--ink)]">
-          <Navbar />
-          <div className="flex flex-1 flex-col pb-24 pt-16 sm:pb-0">{children}</div>
+          <DialogProvider>
+            <Navbar />
+            <div className="flex flex-1 flex-col pb-24 pt-16 sm:pb-0">{children}</div>
+          </DialogProvider>
         </body>
       </html>
     </ClerkProvider>

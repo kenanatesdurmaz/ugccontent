@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Generation } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
+import { useDialog } from "@/components/DialogProvider";
 
 const ASPECT_CLASS: Record<string, string> = {
   "9:16": "aspect-[9/16]",
@@ -14,6 +15,7 @@ const ASPECT_CLASS: Record<string, string> = {
 
 export function GenerationDetail({ id }: { id: string }) {
   const router = useRouter();
+  const { confirm } = useDialog();
   const [generation, setGeneration] = useState<Generation | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -60,9 +62,12 @@ export function GenerationDetail({ id }: { id: string }) {
 
   async function handleDelete() {
     if (!generation) return;
-    if (!confirm(`"${generation.product_name}" kaydını silmek istediğine emin misin?`)) {
-      return;
-    }
+    const ok = await confirm(`"${generation.product_name}" kaydını silmek istediğine emin misin?`, {
+      title: "Kaydı sil",
+      confirmLabel: "Sil",
+      danger: true,
+    });
+    if (!ok) return;
     setDeleting(true);
     const res = await fetch(`/api/generations/${id}`, { method: "DELETE" });
     if (res.ok) {
@@ -73,9 +78,12 @@ export function GenerationDetail({ id }: { id: string }) {
   }
 
   async function handleDeleteVideo(videoId: string, scriptIndex: number) {
-    if (!confirm(`Varyasyon ${scriptIndex + 1}'i silmek istediğine emin misin?`)) {
-      return;
-    }
+    const ok = await confirm(`Varyasyon ${scriptIndex + 1}'i silmek istediğine emin misin?`, {
+      title: "Varyasyonu sil",
+      confirmLabel: "Sil",
+      danger: true,
+    });
+    if (!ok) return;
     const res = await fetch(`/api/generation-videos/${videoId}`, {
       method: "DELETE",
     });
