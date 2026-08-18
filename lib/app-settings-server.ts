@@ -16,7 +16,8 @@ const SETTINGS_ID = "global";
  * users if left on by mistake).
  */
 export function testModeAllowed(): boolean {
-  return process.env.NODE_ENV !== "production" || process.env.ALLOW_TEST_MODE_IN_PRODUCTION === "true";
+  if (process.env.NODE_ENV !== "production") return true;
+  return (process.env.ALLOW_TEST_MODE_IN_PRODUCTION ?? "").trim().toLowerCase() === "true";
 }
 
 export async function getAppSettings(): Promise<AppSettings> {
