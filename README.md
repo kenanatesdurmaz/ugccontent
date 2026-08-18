@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UGCForge
 
-## Getting Started
+Bir ürün fotoğrafı + ürün adından otomatik UGC reklam videoları üreten web
+uygulaması. Video üretim pipeline'ı fal.ai üzerinden doğrudan bu uygulama
+tarafından çalıştırılır (bkz. [lib/fal.ts](lib/fal.ts) ve
+[app/api/generations/route.ts](app/api/generations/route.ts)) — ayrı bir
+otomasyon aracına (n8n vb.) ihtiyaç yoktur.
 
-First, run the development server:
+## Kurulum
+
+```bash
+npm install
+cp .env.local.example .env.local
+```
+
+`.env.local` içine Clerk, Supabase ve `FAL_KEY` (bkz.
+https://fal.ai/dashboard/keys) anahtarlarını gir (bkz.
+[.env.local.example](.env.local.example)).
+
+Supabase projende [supabase/schema.sql](supabase/schema.sql) dosyasını bir
+kere çalıştır (tabloları ve storage bucket'larını oluşturur).
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Video üretim pipeline'ı
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Formdan gönderim yapıldığında, `app/api/generations/route.ts` şu adımları
+sırayla fal.ai'ye karşı çalıştırır:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Açılış karesi** — `fal-ai/nano-banana/edit` modeline ürün fotoğrafı (ve
+   varsa kullanıcının yüklediği avatar) referans olarak verilir; ürünün
+   gerçek kullanım şekline uygun (elde tutmak değil, gerçekten kullanmak)
+   doğal bir sahne üretilir.
+2. **Video** — `fal-ai/kling-video/v3/turbo/pro/image-to-video` modeline bu
+   kare `image_url` olarak verilir, 15 saniyelik, kullanıcının seçtiği
+   `aspect_ratio` (16:9 / 9:16 / 1:1) ile video üretilir.
+3. Sonuç video indirilip Supabase Storage'daki `generated-videos`
+   bucket'ına yeniden yüklenir, `generation_videos` satırı ve ardından
+   `generations.status` `completed` olarak işaretlenir.
 
-## Learn More
+Bu adımlar `fal.ai`'nin queue API'sini (submit → status poll → result)
+kullanır ve `npm run dev` gibi uzun ömürlü bir process içinde çalışır — bkz.
+`runFalPipeline` içindeki not: serverless bir deploy'da (örn. Vercel'de kısa
+ömürlü function'lar) bunun yerine fal.ai'nin webhook teslimatına geçmek
+gerekir.
 
-To learn more about Next.js, take a look at the following resources:
+## Proje yapısı
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` — sayfalar (landing, pricing, dashboard, auth) ve API route'ları
+- `components/` — form, kart, detay gibi client bileşenler
+- `lib/` — Supabase client, fal.ai client, tipler
+- `supabase/schema.sql` — veritabanı şeması + storage bucket'ları
