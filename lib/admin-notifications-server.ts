@@ -13,9 +13,13 @@ export type SubscriptionEventPayload = {
 };
 
 function formatDate(iso: string) {
+  // This runs server-side (Vercel functions default to UTC), so the
+  // timezone must be explicit — otherwise dates render a day off from
+  // what a Turkey-based user expects, especially late at night.
   return new Date(iso).toLocaleString("tr-TR", {
     dateStyle: "long",
     timeStyle: "short",
+    timeZone: "Europe/Istanbul",
   });
 }
 

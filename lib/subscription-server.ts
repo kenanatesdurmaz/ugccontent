@@ -1,8 +1,20 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { PLANS, type PlanId } from "@/lib/plans";
 
-const CYCLE_DAYS = 30;
-const CYCLE_MS = CYCLE_DAYS * 24 * 60 * 60 * 1000;
+/**
+ * Adds a real calendar month rather than a fixed 30 days (30 days short-
+ * changes any 31-day month). Clamps to the target month's last day
+ * instead of letting e.g. Jan 31 + 1 month overflow into March.
+ */
+function addOneMonth(date: Date): Date {
+  const result = new Date(date);
+  const targetMonth = result.getMonth() + 1;
+  result.setMonth(targetMonth);
+  if (result.getMonth() !== targetMonth % 12) {
+    result.setDate(0);
+  }
+  return result;
+}
 
 export type SubscriptionState = {
   plan: PlanId;
@@ -55,7 +67,7 @@ export async function getSubscription(
 
   while (nextRenewsAt.getTime() <= now.getTime()) {
     creditsGranted = round1(creditsGranted + PLANS[plan].credits);
-    nextRenewsAt = new Date(nextRenewsAt.getTime() + CYCLE_MS);
+    nextRenewsAt = addOneMonth(nextRenewsAt);
     renewed = true;
   }
 
@@ -91,7 +103,7 @@ export async function getSubscription(
 export async function setSubscriptionPlan(userId: string, plan: PlanId) {
   const supabase = getSupabaseAdmin();
   const existing = await getSubscription(userId);
-  const renewsAt = new Date(Date.now() + CYCLE_MS).toISOString();
+  const renewsAt = addOneMonth(new Date()).toISOString();
 
   const creditsGranted = existing
     ? round1(existing.creditsTotal + PLANS[plan].credits)
