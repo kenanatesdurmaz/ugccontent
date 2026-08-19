@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Generation } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useDialog } from "@/components/DialogProvider";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function GenerationCard({
   generation,
@@ -13,6 +14,7 @@ export function GenerationCard({
   onDeleted: () => void;
 }) {
   const { confirm } = useDialog();
+  const { t } = useLanguage();
   const completedCount = generation.generation_videos.filter(
     (v) => v.status === "completed"
   ).length;
@@ -20,9 +22,9 @@ export function GenerationCard({
   async function handleDelete(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    const ok = await confirm(`"${generation.product_name}" kaydını silmek istediğine emin misin?`, {
-      title: "Kaydı sil",
-      confirmLabel: "Sil",
+    const ok = await confirm(t.generationCard.deleteConfirm(generation.product_name), {
+      title: t.generationCard.deleteTitle,
+      confirmLabel: t.common.delete,
       danger: true,
     });
     if (!ok) return;
@@ -50,13 +52,13 @@ export function GenerationCard({
           {generation.product_name}
         </span>
         <span className="text-[12px] text-[var(--ink-tertiary)]">
-          {completedCount}/{generation.generation_videos.length} video hazır
+          {t.generationCard.videosReady(completedCount, generation.generation_videos.length)}
         </span>
       </div>
       <StatusBadge status={generation.status} />
       <button
         onClick={handleDelete}
-        aria-label="Kaydı sil"
+        aria-label={t.generationCard.deleteAria}
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[var(--ink-tertiary)] opacity-0 transition-opacity hover:bg-[var(--bg-secondary)] hover:text-[var(--red)] group-hover:opacity-100"
       >
         ✕

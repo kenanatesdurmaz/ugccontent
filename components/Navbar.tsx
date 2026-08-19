@@ -5,18 +5,20 @@ import { Show, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import { Home, CreditCard, LayoutDashboard } from "lucide-react";
 import { NavBar } from "@/components/ui/tubelight-navbar";
 import { AccountSubscriptionPage } from "@/components/AccountSubscriptionPage";
-
-const BASE_NAV_ITEMS = [
-  { name: "Anasayfa", url: "/", icon: Home },
-  { name: "Fiyatlandırma", url: "/pricing", icon: CreditCard },
-];
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function Navbar() {
   const { isSignedIn } = useUser();
+  const { t } = useLanguage();
 
+  const baseNavItems = [
+    { name: t.nav.home, url: "/", icon: Home },
+    { name: t.nav.pricing, url: "/pricing", icon: CreditCard },
+  ];
   const navItems = isSignedIn
-    ? [...BASE_NAV_ITEMS, { name: "Panel", url: "/dashboard", icon: LayoutDashboard }]
-    : BASE_NAV_ITEMS;
+    ? [...baseNavItems, { name: t.nav.dashboard, url: "/dashboard", icon: LayoutDashboard }]
+    : baseNavItems;
 
   return (
     <>
@@ -39,24 +41,28 @@ export function Navbar() {
           </span>
         </Link>
 
-        <Show when="signed-in">
-          <UserButton>
-            <UserButton.UserProfilePage
-              label="Abonelik"
-              url="subscription"
-              labelIcon={<CreditCard size={16} />}
-            >
-              <AccountSubscriptionPage />
-            </UserButton.UserProfilePage>
-          </UserButton>
-        </Show>
-        <Show when="signed-out">
-          <SignInButton mode="modal">
-            <button className="pill-black rounded-full px-4 py-1.5 text-[13px] font-medium">
-              Giriş yap
-            </button>
-          </SignInButton>
-        </Show>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+
+          <Show when="signed-in">
+            <UserButton>
+              <UserButton.UserProfilePage
+                label={t.nav.subscriptionTab}
+                url="subscription"
+                labelIcon={<CreditCard size={16} />}
+              >
+                <AccountSubscriptionPage />
+              </UserButton.UserProfilePage>
+            </UserButton>
+          </Show>
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <button className="pill-black rounded-full px-4 py-1.5 text-[13px] font-medium">
+                {t.nav.signIn}
+              </button>
+            </SignInButton>
+          </Show>
+        </div>
       </div>
 
       <NavBar items={navItems} />

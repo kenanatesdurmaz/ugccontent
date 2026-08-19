@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { consumeJustSubscribed } from "@/lib/subscription";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function SubscribedToast() {
   const [visible, setVisible] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (consumeJustSubscribed()) {
@@ -29,7 +31,7 @@ export function SubscribedToast() {
       >
         <button
           onClick={() => setVisible(false)}
-          aria-label="Kapat"
+          aria-label={t.common.close}
           className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full text-[var(--ink)] transition-colors hover:bg-[var(--bg-secondary)]"
         >
           ✕
@@ -38,7 +40,7 @@ export function SubscribedToast() {
           ✓
         </span>
         <span className="text-[16px] font-semibold text-[var(--ink)]">
-          Abone olundu
+          {t.toast.subscribed}
         </span>
       </div>
     </div>

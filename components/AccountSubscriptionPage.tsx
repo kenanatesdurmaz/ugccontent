@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { PLANS, formatCredits } from "@/lib/plans";
 import { useDialog } from "@/components/DialogProvider";
+import { useLanguage } from "@/components/LanguageProvider";
 
 type SubscriptionState = {
   plan: "starter" | "creator" | "pro";
@@ -16,6 +17,7 @@ type SubscriptionState = {
 /** Custom page rendered inside Clerk's "Manage account" (UserProfile) modal. */
 export function AccountSubscriptionPage() {
   const { confirm } = useDialog();
+  const { t, bcp47 } = useLanguage();
   const [subscription, setSubscription] = useState<SubscriptionState>(null);
   const [loaded, setLoaded] = useState(false);
   const [working, setWorking] = useState(false);
@@ -35,10 +37,11 @@ export function AccountSubscriptionPage() {
   }, []);
 
   async function handleCancel() {
-    const ok = await confirm(
-      "Aboneliğini iptal etmek istediğine emin misin? Ödediğin dönem sonuna kadar kullanmaya devam edebilirsin.",
-      { title: "Aboneliği iptal et", confirmLabel: "Evet, iptal et", danger: true }
-    );
+    const ok = await confirm(t.accountSubscription.cancelConfirm, {
+      title: t.accountSubscription.cancelTitle,
+      confirmLabel: t.accountSubscription.confirmCancel,
+      danger: true,
+    });
     if (!ok) return;
     setWorking(true);
     await fetch("/api/subscription/cancel", { method: "POST" });
@@ -60,13 +63,13 @@ export function AccountSubscriptionPage() {
   if (!subscription) {
     return (
       <div className="flex flex-col gap-2 p-4 text-[14px] text-[var(--ink-secondary)]">
-        Aktif bir aboneliğin yok.
+        {t.accountSubscription.noActiveSubscription}
       </div>
     );
   }
 
   const planInfo = PLANS[subscription.plan];
-  const renewsDate = new Date(subscription.renewsAt).toLocaleDateString("tr-TR", {
+  const renewsDate = new Date(subscription.renewsAt).toLocaleDateString(bcp47, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -76,46 +79,46 @@ export function AccountSubscriptionPage() {
     <div className="flex flex-col gap-5 p-1">
       <div>
         <p className="text-[12px] font-medium uppercase tracking-wide text-[var(--ink-tertiary)]">
-          Aktif plan
+          {t.accountSubscription.activePlan}
         </p>
         <h3 className="text-lg font-semibold tracking-tight text-[var(--ink)]">
           {planInfo.name}
         </h3>
         <p className="mt-1 text-[13px] text-[var(--ink-secondary)]">
-          {formatCredits(subscription.creditsRemaining)} / {formatCredits(subscription.creditsTotal)}{" "}
-          kredi kaldı
+          {t.accountSubscription.creditsRemaining(
+            formatCredits(subscription.creditsRemaining),
+            formatCredits(subscription.creditsTotal)
+          )}
         </p>
       </div>
 
       {subscription.cancelAtPeriodEnd ? (
         <div className="flex flex-col gap-3 rounded-2xl bg-[var(--bg-secondary)] p-4">
           <p className="text-[13px] text-[var(--ink-secondary)]">
-            Aboneliğin iptal edildi. <strong className="text-[var(--ink)]">{renewsDate}</strong>{" "}
-            tarihine kadar aktif kalmaya devam edecek, sonrasında yenilenmeyecek.
+            {t.accountSubscription.cancelledMessage(renewsDate)}
           </p>
           <button
             onClick={handleResume}
             disabled={working}
             className="pill-black self-start rounded-full px-4 py-2 text-[13px] font-medium disabled:opacity-40"
           >
-            İptali geri al
+            {t.accountSubscription.resume}
           </button>
         </div>
       ) : (
         <div className="flex flex-col gap-3 rounded-2xl bg-[var(--bg-secondary)] p-4">
           <p className="text-[13px] text-[var(--ink-secondary)]">
-            Sonraki yenilenme: {renewsDate}
+            {t.accountSubscription.nextRenewal(renewsDate)}
           </p>
           <button
             onClick={handleCancel}
             disabled={working}
             className="self-start rounded-full px-4 py-2 text-[13px] font-medium text-[var(--red)] ring-1 ring-[var(--line)] transition-colors hover:bg-white disabled:opacity-40"
           >
-            Aboneliği iptal et
+            {t.accountSubscription.cancelButton}
           </button>
           <p className="text-[11px] text-[var(--ink-tertiary)]">
-            İptal edersen, ödediğin dönem sonuna ({renewsDate}) kadar planın aktif kalır; sonraki
-            ödeme alınmaz ve abonelik orada sona erer.
+            {t.accountSubscription.finePrint(renewsDate)}
           </p>
         </div>
       )}

@@ -1,36 +1,3 @@
-// Hand-written Turkish strings for just the sign-in/sign-up screens.
-//
-// @clerk/localizations was tried instead, but it pulls in @clerk/shared
-// ^4.29.2, which npm deduped across the whole tree and broke clerkMiddleware
-// (proxy.ts) — @clerk/backend@3.16.6 imports subpaths like
-// "@clerk/shared/pathToRegexp" that don't resolve on that newer @clerk/shared
-// build. Keeping the project pinned to @clerk/shared@4.29.1 (already used by
-// @clerk/backend/@clerk/react) and hand-rolling only the visible strings
-// avoids that regression entirely.
-export const authLocalization = {
-  socialButtonsBlockButton: "{{provider|titleize}} ile giriş yap",
-  formButtonPrimary: "İleri",
-  formFieldLabel__emailAddress: "E-posta adresi",
-  formFieldLabel__password: "Şifre",
-  formFieldAction__forgotPassword: "Şifremi unuttum",
-  signIn: {
-    start: {
-      title: "Giriş yap",
-      subtitle: "{{applicationName}} ile devam etmek için",
-      actionText: "Hesabınız yok mu?",
-      actionLink: "Kayıt ol",
-    },
-  },
-  signUp: {
-    start: {
-      title: "Hesap oluştur",
-      subtitle: "{{applicationName}} ile devam etmek için",
-      actionText: "Hesabınız var mı?",
-      actionLink: "Giriş yap",
-    },
-  },
-};
-
 // Shared Clerk appearance for the sign-in/sign-up "glass card" look: a
 // frosted, translucent card that sits on top of AuthBackground.
 //

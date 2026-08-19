@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { useLanguage } from "@/components/LanguageProvider";
 
 type ConfirmOptions = {
   title?: string;
@@ -29,6 +30,7 @@ const DialogContext = createContext<DialogContextValue | null>(null);
  */
 export function DialogProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DialogState>(null);
+  const { t } = useLanguage();
 
   const confirm = useCallback((message: string, options?: ConfirmOptions) => {
     return new Promise<boolean>((resolve) => {
@@ -85,13 +87,13 @@ export function DialogProvider({ children }: { children: ReactNode }) {
                         : "pill-black"
                     }`}
                   >
-                    {state.options.confirmLabel ?? "Onayla"}
+                    {state.options.confirmLabel ?? t.common.confirm}
                   </button>
                   <button
                     onClick={() => close(false)}
                     className="rounded-full px-5 py-3 text-[14px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)]"
                   >
-                    {state.options.cancelLabel ?? "Vazgeç"}
+                    {state.options.cancelLabel ?? t.common.cancel}
                   </button>
                 </div>
               </>
@@ -110,7 +112,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
                     onClick={() => close()}
                     className="pill-black rounded-full px-5 py-3 text-[14px] font-medium"
                   >
-                    Tamam
+                    {t.common.ok}
                   </button>
                 </div>
               </>

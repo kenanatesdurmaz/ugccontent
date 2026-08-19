@@ -3,7 +3,7 @@ import { Onest } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/Navbar";
 import { DialogProvider } from "@/components/DialogProvider";
-import { authLocalization } from "@/lib/clerk-appearance";
+import { LanguageProvider } from "@/components/LanguageProvider";
 import "./globals.css";
 
 const onest = Onest({
@@ -19,7 +19,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <ClerkProvider
-      localization={authLocalization}
       appearance={{
         variables: {
           colorPrimary: "#0071e3",
@@ -31,10 +30,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <html lang="en" className={`${onest.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col bg-white text-[var(--ink)]">
-          <DialogProvider>
-            <Navbar />
-            <div className="flex flex-1 flex-col pb-24 pt-16 sm:pb-0">{children}</div>
-          </DialogProvider>
+          <LanguageProvider>
+            <DialogProvider>
+              <Navbar />
+              <div className="flex flex-1 flex-col pb-24 pt-16 sm:pb-0">{children}</div>
+            </DialogProvider>
+          </LanguageProvider>
         </body>
       </html>
     </ClerkProvider>

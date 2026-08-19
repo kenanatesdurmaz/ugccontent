@@ -2,23 +2,27 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import type { Generation } from "@/lib/types";
 import { GenerationForm } from "@/components/GenerationForm";
 import { GenerationCard } from "@/components/GenerationCard";
 import { SubscribedToast } from "@/components/SubscribedToast";
 import { SubscriptionPanel } from "@/components/SubscriptionPanel";
 import { markJustSubscribed } from "@/lib/subscription";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function DashboardClient() {
   const [generations, setGenerations] = useState<Generation[] | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Gumroad redirects back here (?subscribed=1) once a real payment
     // completes — the credit grant itself already happened server-side via
-    // the verified webhook, this just surfaces the "Abone olundu" toast and
+    // the verified webhook, this just surfaces the "Subscribed" toast and
     // strips the param so refreshing the page doesn't re-trigger it.
     if (searchParams.get("subscribed") === "1") {
       markJustSubscribed();
@@ -57,12 +61,9 @@ export function DashboardClient() {
       <SubscribedToast />
       <div>
         <h1 className="text-[clamp(1.9rem,4vw,2.75rem)] font-semibold tracking-[-0.02em] text-[var(--ink)]">
-          Panel
+          {t.dashboard.title}
         </h1>
-        <p className="mt-2 text-[var(--ink-secondary)]">
-          Ürün fotoğrafından UGC reklam videosu üret ve geçmiş üretimlerini
-          buradan takip et.
-        </p>
+        <p className="mt-2 text-[var(--ink-secondary)]">{t.dashboard.subtitle}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,280px)_1fr]">
@@ -71,34 +72,43 @@ export function DashboardClient() {
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-[var(--ink)]">
-            Geçmiş üretimler
-          </h2>
+        <button
+          onClick={() => setHistoryOpen((v) => !v)}
+          className="flex items-center justify-between gap-4"
+        >
+          <span className="flex items-center gap-2 text-[15px] font-semibold text-[var(--ink)]">
+            <ChevronDown
+              size={16}
+              className={`text-[var(--ink-tertiary)] transition-transform ${historyOpen ? "rotate-180" : ""}`}
+            />
+            {t.dashboard.historyHeading}
+          </span>
           {generations && (
             <span className="text-[13px] text-[var(--ink-tertiary)]">
-              {generations.length} kayıt
+              {t.dashboard.recordsCount(generations.length)}
             </span>
           )}
-        </div>
+        </button>
 
-        {generations === null && (
-          <p className="text-[14px] text-[var(--ink-tertiary)]">Yükleniyor...</p>
+        {historyOpen && (
+          <>
+            {generations === null && (
+              <p className="text-[14px] text-[var(--ink-tertiary)]">{t.common.loading}</p>
+            )}
+            {generations !== null && generations.length === 0 && (
+              <p className="text-[14px] text-[var(--ink-secondary)]">{t.dashboard.emptyHistory}</p>
+            )}
+            <div className="flex flex-col gap-3">
+              {generations?.map((generation) => (
+                <GenerationCard
+                  key={generation.id}
+                  generation={generation}
+                  onDeleted={loadGenerations}
+                />
+              ))}
+            </div>
+          </>
         )}
-        {generations !== null && generations.length === 0 && (
-          <p className="text-[14px] text-[var(--ink-secondary)]">
-            Henüz bir üretim yok. Yukarıdaki formu doldurarak başla.
-          </p>
-        )}
-        <div className="flex flex-col gap-3">
-          {generations?.map((generation) => (
-            <GenerationCard
-              key={generation.id}
-              generation={generation}
-              onDeleted={loadGenerations}
-            />
-          ))}
-        </div>
       </div>
     </div>
   );

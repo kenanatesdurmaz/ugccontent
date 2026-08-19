@@ -6,6 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { PLANS, formatCredits } from "@/lib/plans";
 import { consumePendingPlan, openCheckoutAndWatch } from "@/lib/subscription";
 import { getCheckoutUrl } from "@/lib/gumroad";
+import { useLanguage } from "@/components/LanguageProvider";
 
 type SubscriptionState = {
   plan: "starter" | "creator" | "pro";
@@ -20,6 +21,7 @@ export function SubscriptionPanel() {
   const [subscription, setSubscription] = useState<SubscriptionState>(null);
   const [loaded, setLoaded] = useState(false);
   const { user, isLoaded: userLoaded } = useUser();
+  const { t, bcp47 } = useLanguage();
 
   useEffect(() => {
     if (!userLoaded) return;
@@ -66,23 +68,23 @@ export function SubscriptionPanel() {
     return (
       <div className="card-shadow flex flex-col gap-2 rounded-3xl bg-[var(--bg-secondary)] p-5">
         <p className="text-[12px] font-medium uppercase tracking-wide text-[var(--ink-tertiary)]">
-          Aktif plan
+          {t.subscriptionPanel.activePlan}
         </p>
         <p className="text-[13px] text-[var(--ink-secondary)]">
-          Video üretmek için bir plana abone olmalısın.
+          {t.subscriptionPanel.noSubscription}
         </p>
         <Link
           href="/pricing"
           className="pill-black mt-1 self-start rounded-full px-4 py-2 text-[13px] font-medium"
         >
-          Planları görüntüle
+          {t.subscriptionPanel.viewPlans}
         </Link>
       </div>
     );
   }
 
   const planInfo = PLANS[subscription.plan];
-  const renewsDate = new Date(subscription.renewsAt).toLocaleDateString("tr-TR", {
+  const renewsDate = new Date(subscription.renewsAt).toLocaleDateString(bcp47, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -96,7 +98,7 @@ export function SubscriptionPanel() {
     <div className="card-shadow flex flex-col gap-3 rounded-3xl bg-[var(--bg-secondary)] p-5">
       <div className="flex flex-col gap-0.5">
         <p className="text-[12px] font-medium uppercase tracking-wide text-[var(--ink-tertiary)]">
-          Aktif plan
+          {t.subscriptionPanel.activePlan}
         </p>
         <h3 className="text-lg font-semibold tracking-tight text-[var(--ink)]">
           {planInfo.name}
@@ -104,7 +106,7 @@ export function SubscriptionPanel() {
       </div>
 
       <span className="w-fit rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[var(--ink)] ring-1 ring-[var(--line)]">
-        {formatCredits(subscription.creditsRemaining)} kredi kaldı
+        {t.subscriptionPanel.creditsRemaining(formatCredits(subscription.creditsRemaining))}
       </span>
 
       <div className="flex flex-col gap-1.5">
@@ -115,13 +117,15 @@ export function SubscriptionPanel() {
           />
         </div>
         <p className="text-[12px] text-[var(--ink-tertiary)]">
-          {formatCredits(subscription.creditsUsed)} / {formatCredits(subscription.creditsTotal)}{" "}
-          kredi kullanıldı
+          {t.subscriptionPanel.creditsUsed(
+            formatCredits(subscription.creditsUsed),
+            formatCredits(subscription.creditsTotal)
+          )}
         </p>
         <p className="text-[12px] text-[var(--ink-tertiary)]">
           {subscription.cancelAtPeriodEnd
-            ? `İptal edildi — ${renewsDate} tarihine kadar aktif`
-            : `Yenilenme: ${renewsDate}`}
+            ? t.subscriptionPanel.cancelledUntil(renewsDate)
+            : t.subscriptionPanel.renewsOn(renewsDate)}
         </p>
       </div>
 
@@ -130,7 +134,7 @@ export function SubscriptionPanel() {
           href="/pricing"
           className="mt-1 self-start rounded-full bg-white px-4 py-2 text-[13px] font-medium text-[var(--ink)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-tertiary)]"
         >
-          Planı yükselt
+          {t.subscriptionPanel.upgradePlan}
         </Link>
       )}
     </div>

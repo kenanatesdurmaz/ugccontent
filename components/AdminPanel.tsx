@@ -79,8 +79,8 @@ export function AdminPanel() {
     if (
       !next &&
       !(await confirm(
-        "Video üretimini tamamen kapatmak istediğine emin misin? Tüm kullanıcılar için devre dışı kalacak.",
-        { title: "Video üretimini durdur", confirmLabel: "Evet, durdur", danger: true }
+        "Are you sure you want to fully disable video generation? It'll be turned off for all users.",
+        { title: "Stop video generation", confirmLabel: "Yes, stop it", danger: true }
       ))
     ) {
       return;
@@ -93,8 +93,8 @@ export function AdminPanel() {
     if (
       mode === "test" &&
       !(await confirm(
-        "TEST MODE'a geçmek istediğine emin misin? Gerçek fal.ai çağrısı yapılmayacak, sahte sonuçlar üretilecek.",
-        { title: "TEST MODE'a geç", confirmLabel: "Evet, geç" }
+        "Are you sure you want to switch to TEST MODE? No real fal.ai calls will be made, results will be simulated.",
+        { title: "Switch to TEST MODE", confirmLabel: "Yes, switch" }
       ))
     ) {
       return;
@@ -107,7 +107,7 @@ export function AdminPanel() {
     const res = await fetch("/api/admin/notifications/test", { method: "POST" });
     if (!res.ok) {
       const data = await res.json().catch(() => null);
-      await notify(data?.error ?? "Test bildirimi gönderilemedi", "Bildirim gönderilemedi");
+      await notify(data?.error ?? "Couldn't send the test notification", "Notification failed");
     }
     await refresh();
     setNotifWorking(false);
@@ -121,7 +121,7 @@ export function AdminPanel() {
   }
 
   if (!settings) {
-    return <p className="text-[14px] text-[var(--ink-tertiary)]">Yükleniyor...</p>;
+    return <p className="text-[14px] text-[var(--ink-tertiary)]">Loading...</p>;
   }
 
   return (
@@ -130,10 +130,10 @@ export function AdminPanel() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-[15px] font-semibold text-[var(--ink)]">
-              Acil durdurma anahtarı
+              Emergency kill switch
             </h2>
             <p className="mt-1 text-[13px] text-[var(--ink-secondary)]">
-              Kapatıldığında hiçbir kullanıcı yeni video üretimi başlatamaz.
+              When off, no user can start a new video generation.
             </p>
           </div>
           <button
@@ -145,7 +145,7 @@ export function AdminPanel() {
                 : "bg-[var(--green)] text-white hover:bg-green-700"
             }`}
           >
-            {settings.generationEnabled ? "Video üretimini durdur" : "Video üretimini aç"}
+            {settings.generationEnabled ? "Stop video generation" : "Turn video generation on"}
           </button>
         </div>
         <span
@@ -155,15 +155,15 @@ export function AdminPanel() {
               : "bg-[var(--red)]/10 text-[var(--red)]"
           }`}
         >
-          {settings.generationEnabled ? "● Aktif" : "● Durduruldu"}
+          {settings.generationEnabled ? "● Active" : "● Stopped"}
         </span>
       </div>
 
       <div className="card-shadow flex flex-col gap-4 rounded-3xl bg-[var(--bg-secondary)] p-6">
         <div>
-          <h2 className="text-[15px] font-semibold text-[var(--ink)]">Mod</h2>
+          <h2 className="text-[15px] font-semibold text-[var(--ink)]">Mode</h2>
           <p className="mt-1 text-[13px] text-[var(--ink-secondary)]">
-            Test modunda gerçek fal.ai çağrısı yapılmaz, sonuçlar simüle edilir.
+            In test mode, no real fal.ai calls are made — results are simulated.
           </p>
         </div>
         <div className="flex gap-2">
@@ -192,31 +192,31 @@ export function AdminPanel() {
         </div>
         {!testModeAllowed && (
           <p className="text-[12px] text-[var(--ink-tertiary)]">
-            Bu ortamda (production) test modu devre dışı bırakıldı.
+            Test mode is disabled in this (production) environment.
           </p>
         )}
       </div>
 
       <div className="card-shadow flex flex-col gap-3 rounded-3xl bg-[var(--bg-secondary)] p-6">
-        <h2 className="text-[15px] font-semibold text-[var(--ink)]">Son üretimler</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--ink)]">Recent generations</h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-[12px]">
             <thead>
               <tr className="text-[var(--ink-tertiary)]">
-                <th className="pb-2 pr-3 font-medium">Zaman</th>
-                <th className="pb-2 pr-3 font-medium">Kullanıcı</th>
-                <th className="pb-2 pr-3 font-medium">Ürün</th>
-                <th className="pb-2 pr-3 font-medium">Çözünürlük</th>
-                <th className="pb-2 pr-3 font-medium">Kredi</th>
+                <th className="pb-2 pr-3 font-medium">Time</th>
+                <th className="pb-2 pr-3 font-medium">User</th>
+                <th className="pb-2 pr-3 font-medium">Product</th>
+                <th className="pb-2 pr-3 font-medium">Resolution</th>
+                <th className="pb-2 pr-3 font-medium">Credits</th>
                 <th className="pb-2 pr-3 font-medium">fal.ai request id</th>
-                <th className="pb-2 font-medium">Durum</th>
+                <th className="pb-2 font-medium">Status</th>
               </tr>
             </thead>
             <tbody>
               {logs?.map((row) => (
                 <tr key={row.id} className="border-t border-[var(--line)]">
                   <td className="py-2 pr-3 text-[var(--ink-secondary)]">
-                    {new Date(row.created_at).toLocaleString("tr-TR")}
+                    {new Date(row.created_at).toLocaleString("en-US")}
                   </td>
                   <td className="py-2 pr-3 font-mono text-[11px] text-[var(--ink-secondary)]">
                     {row.clerk_user_id.slice(0, 12)}…
@@ -235,7 +235,7 @@ export function AdminPanel() {
             </tbody>
           </table>
           {logs !== null && logs.length === 0 && (
-            <p className="py-4 text-[13px] text-[var(--ink-tertiary)]">Henüz üretim yok.</p>
+            <p className="py-4 text-[13px] text-[var(--ink-tertiary)]">No generations yet.</p>
           )}
         </div>
       </div>
@@ -244,10 +244,10 @@ export function AdminPanel() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-[15px] font-semibold text-[var(--ink)]">
-              Abonelik e-posta bildirimleri
+              Subscription email notifications
             </h2>
             <p className="mt-1 text-[13px] text-[var(--ink-secondary)]">
-              Başarılı her abonelikte ADMIN_EMAIL adresine otomatik e-posta gider.
+              An automatic email is sent to ADMIN_EMAIL on every successful subscription.
             </p>
           </div>
           <div className="flex shrink-0 gap-2">
@@ -256,21 +256,21 @@ export function AdminPanel() {
               disabled={notifWorking}
               className="rounded-full bg-white px-4 py-2 text-[13px] font-medium text-[var(--ink)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-tertiary)] disabled:opacity-40"
             >
-              Başarısızları yeniden dene
+              Retry failed
             </button>
             <button
               onClick={sendTestNotification}
               disabled={notifWorking || settings.mode !== "test"}
-              title={settings.mode !== "test" ? "Sadece TEST MODE'da kullanılabilir" : undefined}
+              title={settings.mode !== "test" ? "Only available in TEST MODE" : undefined}
               className="pill-black rounded-full px-4 py-2 text-[13px] font-medium disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Test bildirimi gönder
+              Send test notification
             </button>
           </div>
         </div>
         {settings.mode !== "test" && (
           <p className="text-[12px] text-[var(--ink-tertiary)]">
-            Test bildirimi göndermek için önce yukarıdan TEST MODE&apos;a geç.
+            Switch to TEST MODE above to send a test notification.
           </p>
         )}
 
@@ -278,22 +278,22 @@ export function AdminPanel() {
           <table className="w-full min-w-[640px] text-left text-[12px]">
             <thead>
               <tr className="text-[var(--ink-tertiary)]">
-                <th className="pb-2 pr-3 font-medium">Zaman</th>
-                <th className="pb-2 pr-3 font-medium">Tür</th>
-                <th className="pb-2 pr-3 font-medium">Kullanıcı</th>
-                <th className="pb-2 pr-3 font-medium">Paket</th>
-                <th className="pb-2 pr-3 font-medium">Durum</th>
-                <th className="pb-2 font-medium">Hata</th>
+                <th className="pb-2 pr-3 font-medium">Time</th>
+                <th className="pb-2 pr-3 font-medium">Type</th>
+                <th className="pb-2 pr-3 font-medium">User</th>
+                <th className="pb-2 pr-3 font-medium">Plan</th>
+                <th className="pb-2 pr-3 font-medium">Status</th>
+                <th className="pb-2 font-medium">Error</th>
               </tr>
             </thead>
             <tbody>
               {notifications?.map((row) => (
                 <tr key={row.id} className="border-t border-[var(--line)]">
                   <td className="py-2 pr-3 text-[var(--ink-secondary)]">
-                    {new Date(row.created_at).toLocaleString("tr-TR")}
+                    {new Date(row.created_at).toLocaleString("en-US")}
                   </td>
                   <td className="py-2 pr-3 text-[var(--ink-secondary)]">
-                    {row.event_type === "test" ? "Test" : "Abonelik"}
+                    {row.event_type === "test" ? "Test" : "Subscription"}
                   </td>
                   <td className="py-2 pr-3 text-[var(--ink)]">{row.payload?.userEmail ?? "—"}</td>
                   <td className="py-2 pr-3 text-[var(--ink-secondary)]">{row.payload?.plan ?? "—"}</td>
@@ -316,7 +316,7 @@ export function AdminPanel() {
             </tbody>
           </table>
           {notifications !== null && notifications.length === 0 && (
-            <p className="py-4 text-[13px] text-[var(--ink-tertiary)]">Henüz bildirim yok.</p>
+            <p className="py-4 text-[13px] text-[var(--ink-tertiary)]">No notifications yet.</p>
           )}
         </div>
       </div>

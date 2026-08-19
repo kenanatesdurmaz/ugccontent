@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { PlanId } from "@/lib/plans";
 import { SubscribeCta } from "@/components/SubscribeCta";
+import { useLanguage } from "@/components/LanguageProvider";
 
 /**
- * Shows a static "Abone olundu" badge instead of the subscribe button for
+ * Shows a static "Subscribed" badge instead of the subscribe button for
  * whichever plan the user is currently on, so it's unambiguous which plan
- * is active (rather than letting them re-click "Abone ol" on it).
+ * is active (rather than letting them re-click "Subscribe" on it).
  */
 export function PlanCta({
   plan,
@@ -22,6 +23,7 @@ export function PlanCta({
   children: ReactNode;
 }) {
   const [activePlan, setActivePlan] = useState<PlanId | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
@@ -42,7 +44,7 @@ export function PlanCta({
       <span
         className={`flex items-center justify-center gap-1.5 ${activeClassName ?? className}`}
       >
-        <span aria-hidden>✓</span> Abone olundu
+        <span aria-hidden>✓</span> {t.common.subscribed}
       </span>
     );
   }

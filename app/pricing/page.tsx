@@ -1,65 +1,67 @@
+"use client";
+
 import { PlanCta } from "@/components/PlanCta";
 import { PLANS, CREDIT_COST_15S, max1080pVideos } from "@/lib/plans";
-
-const plans = [
-  {
-    id: PLANS.starter.id,
-    name: PLANS.starter.name,
-    price: PLANS.starter.price,
-    tagline: "Küçük markalar ve bağımsız satıcılar için",
-    features: [
-      `Ayda ${PLANS.starter.credits} AI video kredisi`,
-      `720p video (15 sn): ${CREDIT_COST_15S["720p"]} kredi`,
-      `1080p video (15 sn): ${CREDIT_COST_15S["1080p"]} kredi`,
-      `Maksimum ${max1080pVideos(PLANS.starter.credits)} adet 1080p video/ay`,
-    ],
-    cta: "Abone ol",
-    highlighted: false,
-  },
-  {
-    id: PLANS.creator.id,
-    name: PLANS.creator.name,
-    price: PLANS.creator.price,
-    tagline: "Büyüyen markalar için",
-    features: [
-      `Ayda ${PLANS.creator.credits} AI video kredisi`,
-      `720p video (15 sn): ${CREDIT_COST_15S["720p"]} kredi`,
-      `1080p video (15 sn): ${CREDIT_COST_15S["1080p"]} kredi`,
-      `Maksimum ${max1080pVideos(PLANS.creator.credits)} adet 1080p video/ay`,
-      "Öncelikli video işleme",
-    ],
-    cta: "Abone ol",
-    highlighted: true,
-    badge: "En Popüler",
-  },
-  {
-    id: PLANS.pro.id,
-    name: PLANS.pro.name,
-    price: PLANS.pro.price,
-    tagline: "Ölçeklenen e-ticaret ekipleri için",
-    features: [
-      `Ayda ${PLANS.pro.credits} AI video kredisi`,
-      `720p video (15 sn): ${CREDIT_COST_15S["720p"]} kredi`,
-      `1080p video (15 sn): ${CREDIT_COST_15S["1080p"]} kredi`,
-      `Maksimum ${max1080pVideos(PLANS.pro.credits)} adet 1080p video/ay`,
-      "Öncelikli video işleme",
-      "Takım üyeleri ekleme",
-    ],
-    cta: "Abone ol",
-    highlighted: false,
-  },
-];
+import { useLanguage } from "@/components/LanguageProvider";
 
 export default function PricingPage() {
+  const { t } = useLanguage();
+  const { pricing } = t;
+
+  const plans = [
+    {
+      id: PLANS.starter.id,
+      name: PLANS.starter.name,
+      price: PLANS.starter.price,
+      tagline: pricing.taglineStarter,
+      features: [
+        pricing.creditsPerMonth(PLANS.starter.credits),
+        pricing.cost720p(CREDIT_COST_15S["720p"]),
+        pricing.cost1080p(CREDIT_COST_15S["1080p"]),
+        pricing.max1080p(max1080pVideos(PLANS.starter.credits)),
+      ],
+      highlighted: false,
+    },
+    {
+      id: PLANS.creator.id,
+      name: PLANS.creator.name,
+      price: PLANS.creator.price,
+      tagline: pricing.taglineCreator,
+      features: [
+        pricing.creditsPerMonth(PLANS.creator.credits),
+        pricing.cost720p(CREDIT_COST_15S["720p"]),
+        pricing.cost1080p(CREDIT_COST_15S["1080p"]),
+        pricing.max1080p(max1080pVideos(PLANS.creator.credits)),
+        pricing.priorityProcessing,
+      ],
+      highlighted: true,
+      badge: pricing.mostPopular,
+    },
+    {
+      id: PLANS.pro.id,
+      name: PLANS.pro.name,
+      price: PLANS.pro.price,
+      tagline: pricing.taglinePro,
+      features: [
+        pricing.creditsPerMonth(PLANS.pro.credits),
+        pricing.cost720p(CREDIT_COST_15S["720p"]),
+        pricing.cost1080p(CREDIT_COST_15S["1080p"]),
+        pricing.max1080p(max1080pVideos(PLANS.pro.credits)),
+        pricing.priorityProcessing,
+        pricing.teamMembers,
+      ],
+      highlighted: false,
+    },
+  ];
+
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-24">
       <div className="text-center">
         <h1 className="text-[clamp(2.4rem,5vw,3.75rem)] font-semibold tracking-[-0.03em] text-[var(--ink)]">
-          Basit, şeffaf fiyatlandırma
+          {pricing.heading}
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-[var(--ink-secondary)]">
-          Video üretmek için bir plana abone olman gerekir. Kredilerin
-          süreye göre kullanılır — istediğin süre ve çözünürlükte üret.
+          {pricing.subtext}
         </p>
       </div>
 
@@ -102,7 +104,7 @@ export default function PricingPage() {
                   plan.highlighted ? "text-white/60" : "text-[var(--ink-tertiary)]"
                 }`}
               >
-                /ay
+                {pricing.perMonth}
               </span>
             </div>
 
@@ -130,7 +132,7 @@ export default function PricingPage() {
                 plan.highlighted ? "bg-white/15 text-white" : "bg-white text-[var(--ink)]"
               }`}
             >
-              {plan.cta}
+              {pricing.cta}
             </PlanCta>
           </div>
         ))}

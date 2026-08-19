@@ -9,10 +9,10 @@ export default async function AdminPage() {
     return (
       <main className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center gap-2 px-6 py-24 text-center">
         <h1 className="text-xl font-semibold tracking-tight text-[var(--ink)]">
-          Erişim yok
+          No access
         </h1>
         <p className="text-[14px] text-[var(--ink-secondary)]">
-          Bu sayfayı görüntülemek için admin yetkin olması gerekiyor.
+          You need admin access to view this page.
         </p>
       </main>
     );
@@ -25,7 +25,7 @@ export default async function AdminPage() {
           Admin
         </h1>
         <p className="mt-2 text-[var(--ink-secondary)]">
-          Video üretimi için acil durdurma anahtarı, test/canlı mod ve son üretim kayıtları.
+          Emergency kill switch, test/live mode, and recent generation logs for video generation.
         </p>
       </div>
       <AdminPanel />

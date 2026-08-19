@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import type { PlanId } from "@/lib/plans";
 import { setPendingPlan, openCheckoutAndWatch } from "@/lib/subscription";
 import { getCheckoutUrl } from "@/lib/gumroad";
+import { useLanguage } from "@/components/LanguageProvider";
 
 /**
  * "Subscribing" now sends the user to the real Gumroad checkout for the
@@ -24,6 +25,7 @@ export function SubscribeCta({
   children: ReactNode;
 }) {
   const { isSignedIn, user } = useUser();
+  const { t } = useLanguage();
   const email = user?.primaryEmailAddress?.emailAddress;
   const [waiting, setWaiting] = useState(false);
 
@@ -37,7 +39,7 @@ export function SubscribeCta({
           openCheckoutAndWatch(getCheckoutUrl(plan, email), () => setWaiting(false));
         }}
       >
-        {waiting ? "Ödeme bekleniyor..." : children}
+        {waiting ? t.common.waitingForPayment : children}
       </button>
     );
   }

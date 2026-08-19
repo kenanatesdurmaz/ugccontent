@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { AspectRatio, Resolution } from "@/lib/types";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { creditCost, formatCredits } from "@/lib/plans";
+import { useLanguage } from "@/components/LanguageProvider";
 
 type SubscriptionState = {
   plan: "starter" | "creator" | "pro";
@@ -33,6 +34,7 @@ type ExtraImage = { file: File; preview: string };
 
 export function GenerationForm({ onCreated }: { onCreated: () => void }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const extraFileInputRef = useRef<HTMLInputElement>(null);
@@ -126,7 +128,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
 
     const file = fileInputRef.current?.files?.[0];
     if (!file || !productName.trim()) {
-      setError("Ürün fotoğrafı ve ürün adı zorunlu.");
+      setError(t.generationForm.errorMissingFields);
       return;
     }
 
@@ -146,7 +148,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
       });
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok) {
-        throw new Error(uploadData.error ?? "Görsel yüklenemedi");
+        throw new Error(uploadData.error ?? t.generationForm.errorImageUpload);
       }
 
       let avatarUrl: string | null = null;
@@ -160,7 +162,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
         });
         const avatarUploadData = await avatarUploadRes.json();
         if (!avatarUploadRes.ok) {
-          throw new Error(avatarUploadData.error ?? "Avatar yüklenemedi");
+          throw new Error(avatarUploadData.error ?? t.generationForm.errorAvatarUpload);
         }
         avatarUrl = avatarUploadData.url;
       }
@@ -175,7 +177,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
         });
         const extraUploadData = await extraUploadRes.json();
         if (!extraUploadRes.ok) {
-          throw new Error(extraUploadData.error ?? "Ek görsel yüklenemedi");
+          throw new Error(extraUploadData.error ?? t.generationForm.errorExtraImageUpload);
         }
         extraProductImageUrls.push(extraUploadData.url);
       }
@@ -204,7 +206,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
           router.push("/pricing");
           return;
         }
-        throw new Error(genData.error ?? "Üretim başlatılamadı");
+        throw new Error(genData.error ?? t.generationForm.errorCreateFailed);
       }
 
       setProductName("");
@@ -233,19 +235,19 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
       className="card-shadow flex flex-col gap-4 rounded-3xl bg-[var(--bg-secondary)] p-5"
     >
       <h2 className="text-[15px] font-semibold tracking-tight text-[var(--ink)]">
-        Yeni video üret
+        {t.generationForm.title}
       </h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <label className="text-[12px] font-medium text-[var(--ink-secondary)]">
-            Ürün fotoğrafı
+            {t.generationForm.productImageLabel}
           </label>
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
               {preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={preview} alt="Ürün önizleme" className="h-full w-full object-cover" />
+                <img src={preview} alt={t.generationForm.productImageAlt} className="h-full w-full object-cover" />
               ) : (
                 <span className="text-[var(--ink-tertiary)]">＋</span>
               )}
@@ -262,13 +264,13 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="productName" className="text-[12px] font-medium text-[var(--ink-secondary)]">
-            Ürün adı
+            {t.generationForm.productNameLabel}
           </label>
           <input
             id="productName"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
-            placeholder="Örn. Lavanta Uyku Spreyi"
+            placeholder={t.generationForm.productNamePlaceholder}
             className="rounded-xl border-none bg-white px-3 py-2.5 text-[13px] text-[var(--ink)] outline-none ring-1 ring-transparent placeholder:text-[var(--ink-tertiary)] focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
@@ -277,7 +279,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <label className="text-[12px] font-medium text-[var(--ink-secondary)]">
-            Ek görseller <span className="text-[var(--ink-tertiary)]">(opsiyonel)</span>
+            {t.generationForm.extraImagesLabel} <span className="text-[var(--ink-tertiary)]">{t.generationForm.optional}</span>
           </label>
           <div className="flex flex-wrap items-center gap-2">
             {extraImages.map((img, i) => (
@@ -288,13 +290,13 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={img.preview}
-                  alt={`Ek görsel ${i + 1}`}
+                  alt={t.generationForm.extraImageAlt(i + 1)}
                   className="h-full w-full object-cover"
                 />
                 <button
                   type="button"
                   onClick={() => removeExtraImage(i)}
-                  aria-label="Görseli kaldır"
+                  aria-label={t.generationForm.removeImageAria}
                   className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-black/50 text-[9px] text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100"
                 >
                   ✕
@@ -319,7 +321,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
 
         <div className="flex flex-col gap-1.5">
           <label className="text-[12px] font-medium text-[var(--ink-secondary)]">
-            Videodaki kişi <span className="text-[var(--ink-tertiary)]">(opsiyonel)</span>
+            {t.generationForm.avatarLabel} <span className="text-[var(--ink-tertiary)]">{t.generationForm.optional}</span>
           </label>
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -327,7 +329,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={avatarPreview}
-                  alt="Avatar önizleme"
+                  alt={t.generationForm.avatarAlt}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -348,7 +350,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <label className="text-[12px] font-medium text-[var(--ink-secondary)]">
-            Video boyutu
+            {t.generationForm.aspectRatioLabel}
           </label>
           <div className="flex gap-1.5">
             {ASPECT_OPTIONS.map((opt) => (
@@ -378,7 +380,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
 
         <div className="flex flex-col gap-1.5">
           <label className="text-[12px] font-medium text-[var(--ink-secondary)]">
-            Video kalitesi
+            {t.generationForm.resolutionLabel}
           </label>
           <div className="flex gap-1.5">
             {RESOLUTION_OPTIONS.map((opt) => (
@@ -403,12 +405,12 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
           <label htmlFor="duration" className="text-[12px] font-medium text-[var(--ink-secondary)]">
-            Video süresi
+            {t.generationForm.durationLabel}
           </label>
           <span className="text-[12px] font-medium text-[var(--ink)]">
-            {duration} sn
+            {duration}{t.generationForm.seconds}
             {subscription && (
-              <span className="text-[var(--ink-tertiary)]"> · {formatCredits(cost)} kredi</span>
+              <span className="text-[var(--ink-tertiary)]"> · {formatCredits(cost)} {t.generationForm.credits}</span>
             )}
           </span>
         </div>
@@ -424,21 +426,23 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
         />
         {subscription && (
           <p className="text-[11px] text-[var(--ink-tertiary)]">
-            Kalan kredi: {formatCredits(subscription.creditsRemaining)} /{" "}
-            {formatCredits(subscription.creditsTotal)}
+            {t.generationForm.remainingCredits(
+              formatCredits(subscription.creditsRemaining),
+              formatCredits(subscription.creditsTotal)
+            )}
           </p>
         )}
       </div>
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="customPrompt" className="text-[12px] font-medium text-[var(--ink-secondary)]">
-          Ek notlar / prompt <span className="text-[var(--ink-tertiary)]">(opsiyonel)</span>
+          {t.generationForm.promptLabel} <span className="text-[var(--ink-tertiary)]">{t.generationForm.optional}</span>
         </label>
         <textarea
           id="customPrompt"
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
-          placeholder="Örn. genç, enerjik bir ton olsun; mutfakta çekilsin"
+          placeholder={t.generationForm.promptPlaceholder}
           rows={2}
           className="resize-none rounded-xl border-none bg-white px-3 py-2.5 text-[13px] text-[var(--ink)] outline-none ring-1 ring-transparent placeholder:text-[var(--ink-tertiary)] focus:ring-2 focus:ring-[var(--accent)]"
         />
@@ -451,7 +455,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
         disabled={submitting}
         className="pill-black self-start rounded-full px-6 py-2.5 text-[14px] font-medium disabled:cursor-not-allowed disabled:opacity-40"
       >
-        {submitting ? "Üretiliyor..." : "Video üret"}
+        {submitting ? t.generationForm.submitting : t.generationForm.submit}
       </button>
 
       {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}

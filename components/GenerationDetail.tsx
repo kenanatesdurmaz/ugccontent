@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Generation } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useDialog } from "@/components/DialogProvider";
+import { useLanguage } from "@/components/LanguageProvider";
 
 const ASPECT_CLASS: Record<string, string> = {
   "9:16": "aspect-[9/16]",
@@ -16,6 +17,7 @@ const ASPECT_CLASS: Record<string, string> = {
 export function GenerationDetail({ id }: { id: string }) {
   const router = useRouter();
   const { confirm } = useDialog();
+  const { t } = useLanguage();
   const [generation, setGeneration] = useState<Generation | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -62,9 +64,9 @@ export function GenerationDetail({ id }: { id: string }) {
 
   async function handleDelete() {
     if (!generation) return;
-    const ok = await confirm(`"${generation.product_name}" kaydını silmek istediğine emin misin?`, {
-      title: "Kaydı sil",
-      confirmLabel: "Sil",
+    const ok = await confirm(t.generationDetail.deleteConfirm(generation.product_name), {
+      title: t.generationDetail.deleteTitle,
+      confirmLabel: t.common.delete,
       danger: true,
     });
     if (!ok) return;
@@ -78,9 +80,9 @@ export function GenerationDetail({ id }: { id: string }) {
   }
 
   async function handleDeleteVideo(videoId: string, scriptIndex: number) {
-    const ok = await confirm(`Varyasyon ${scriptIndex + 1}'i silmek istediğine emin misin?`, {
-      title: "Varyasyonu sil",
-      confirmLabel: "Sil",
+    const ok = await confirm(t.generationDetail.deleteVariantConfirm(scriptIndex + 1), {
+      title: t.generationDetail.deleteVariantTitle,
+      confirmLabel: t.common.delete,
       danger: true,
     });
     if (!ok) return;
@@ -100,9 +102,9 @@ export function GenerationDetail({ id }: { id: string }) {
   if (notFound) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
-        <p className="text-[var(--ink-secondary)]">Üretim bulunamadı.</p>
+        <p className="text-[var(--ink-secondary)]">{t.generationDetail.notFound}</p>
         <Link href="/dashboard" className="text-[14px] font-medium text-[var(--accent)]">
-          ← Panele dön
+          {t.generationDetail.backToDashboard}
         </Link>
       </div>
     );
@@ -111,7 +113,7 @@ export function GenerationDetail({ id }: { id: string }) {
   if (!generation) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-1 items-center justify-center px-6 py-24">
-        <p className="text-[14px] text-[var(--ink-tertiary)]">Yükleniyor...</p>
+        <p className="text-[14px] text-[var(--ink-tertiary)]">{t.common.loading}</p>
       </div>
     );
   }
@@ -126,7 +128,7 @@ export function GenerationDetail({ id }: { id: string }) {
         href="/dashboard"
         className="text-[13px] text-[var(--ink-tertiary)] transition-colors hover:text-[var(--ink)]"
       >
-        ← Panele dön
+        {t.generationDetail.backToDashboard}
       </Link>
 
       <div className="flex items-center gap-4">
@@ -141,8 +143,8 @@ export function GenerationDetail({ id }: { id: string }) {
           <img
             key={url}
             src={url}
-            alt={`Ek görsel ${i + 1}`}
-            title={`Ek görsel ${i + 1}`}
+            alt={t.generationDetail.extraImageAlt(i + 1)}
+            title={t.generationDetail.extraImageAlt(i + 1)}
             className="-ml-6 h-12 w-12 rounded-xl border-2 border-white object-cover"
           />
         ))}
@@ -150,8 +152,8 @@ export function GenerationDetail({ id }: { id: string }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={generation.avatar_url}
-            alt="Videodaki kişi"
-            title="Videodaki kişi"
+            alt={t.generationDetail.avatarAlt}
+            title={t.generationDetail.avatarAlt}
             className="-ml-6 h-10 w-10 rounded-full border-2 border-white object-cover"
           />
         )}
@@ -174,7 +176,7 @@ export function GenerationDetail({ id }: { id: string }) {
           disabled={deleting}
           className="rounded-full px-4 py-2 text-[13px] font-medium text-[var(--red)] transition-colors hover:bg-[var(--bg-secondary)] disabled:opacity-40"
         >
-          {deleting ? "Siliniyor..." : "Sil"}
+          {deleting ? t.common.deleting : t.common.delete}
         </button>
       </div>
 
@@ -192,7 +194,7 @@ export function GenerationDetail({ id }: { id: string }) {
           >
             <button
               onClick={() => handleDeleteVideo(video.id, video.script_index)}
-              aria-label="Varyasyonu sil"
+              aria-label={t.generationDetail.deleteVariantAria}
               className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/60 group-hover:opacity-100"
             >
               ✕
@@ -210,7 +212,7 @@ export function GenerationDetail({ id }: { id: string }) {
                 />
               ) : video.status === "failed" ? (
                 <span className="px-4 text-center text-[13px] text-[var(--red)]">
-                  Üretim başarısız oldu
+                  {t.generationDetail.failedStatus}
                 </span>
               ) : (
                 <>
@@ -223,14 +225,14 @@ export function GenerationDetail({ id }: { id: string }) {
                   />
                   <div className="absolute inset-0 bg-black/55" />
                   <span className="relative px-4 text-center text-[13px] font-medium text-white">
-                    Video üretiliyor...
+                    {t.generationDetail.generatingStatus}
                   </span>
                 </>
               )}
             </div>
             <div className="flex items-center justify-between px-4 py-3">
               <span className="text-[12px] font-medium text-[var(--ink-tertiary)]">
-                Varyasyon {video.script_index + 1}
+                {t.generationDetail.variantLabel(video.script_index + 1)}
               </span>
               <StatusBadge status={video.status} />
             </div>
