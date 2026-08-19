@@ -12,7 +12,7 @@ const onest = Onest({
 });
 
 export const metadata: Metadata = {
-  title: "UGCForge — AI UGC Ad Videos",
+  title: "UGCBeam — AI UGC Ad Videos",
   description: "Turn a product photo into scroll-stopping UGC ad videos in minutes.",
 };
 

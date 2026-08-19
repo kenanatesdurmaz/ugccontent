@@ -22,11 +22,20 @@ export function Navbar() {
     <>
       <div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--ink)]">
-            <span className="h-2 w-2 rounded-full bg-white" />
-          </span>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 32 32"
+            className="shrink-0"
+            aria-hidden
+          >
+            <rect width="32" height="32" rx="8" fill="var(--ink)" />
+            <path d="M10 11 L15 16 L10 21" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M16 11 L21 16 L16 21" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" opacity="0.62" />
+            <path d="M22 11 L27 16 L22 21" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" opacity="0.32" />
+          </svg>
           <span className="text-[15px] font-semibold tracking-tight text-[var(--ink)]">
-            UGCForge
+            UGCBeam
           </span>
         </Link>
 

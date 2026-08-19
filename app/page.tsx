@@ -255,7 +255,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-6">
           <ScrollReveal>
             <h2 className="text-center text-[clamp(1.8rem,3.5vw,2.75rem)] font-semibold tracking-[-0.02em] text-[var(--ink)]">
-              Neden UGCForge
+              Neden UGCBeam
             </h2>
           </ScrollReveal>
 
