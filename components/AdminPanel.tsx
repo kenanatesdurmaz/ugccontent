@@ -127,7 +127,7 @@ export function AdminPanel() {
   return (
     <div className="flex flex-col gap-6">
       <div className="card-shadow flex flex-col gap-4 rounded-3xl bg-[var(--bg-secondary)] p-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h2 className="text-[15px] font-semibold text-[var(--ink)]">
               Emergency kill switch
@@ -241,7 +241,7 @@ export function AdminPanel() {
       </div>
 
       <div className="card-shadow flex flex-col gap-4 rounded-3xl bg-[var(--bg-secondary)] p-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h2 className="text-[15px] font-semibold text-[var(--ink)]">
               Subscription email notifications
@@ -250,7 +250,7 @@ export function AdminPanel() {
               An automatic email is sent to ADMIN_EMAIL on every successful subscription.
             </p>
           </div>
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2">
             <button
               onClick={retryFailedNotifications}
               disabled={notifWorking}

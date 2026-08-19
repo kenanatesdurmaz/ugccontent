@@ -306,7 +306,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
                   type="button"
                   onClick={() => removeExtraImage(i)}
                   aria-label={t.generationForm.removeImageAria}
-                  className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-black/50 text-[9px] text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100"
+                  className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-black/50 text-[9px] text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 pointer-coarse:opacity-100"
                 >
                   ✕
                 </button>

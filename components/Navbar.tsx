@@ -23,8 +23,8 @@ export function Navbar() {
 
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between gap-2 px-4 py-4 sm:px-6">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           <svg
             width="24"
             height="24"
@@ -42,9 +42,9 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
           <ThemeToggle />
-          <LanguageSwitcher />
+          <LanguageSwitcher className="min-w-0 rounded-full border border-[var(--line)] bg-white px-2 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)] focus:outline-none sm:px-3 sm:text-[13px]" />
 
           <Show when="signed-in">
             <UserButton>
@@ -59,7 +59,7 @@ export function Navbar() {
           </Show>
           <Show when="signed-out">
             <SignInButton mode="modal">
-              <button className="pill-black rounded-full px-4 py-1.5 text-[13px] font-medium">
+              <button className="pill-black shrink-0 rounded-full px-3 py-1.5 text-[13px] font-medium sm:px-4">
                 {t.nav.signIn}
               </button>
             </SignInButton>

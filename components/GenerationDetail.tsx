@@ -166,34 +166,36 @@ export function GenerationDetail({ id }: { id: string }) {
         {t.generationDetail.backToDashboard}
       </Link>
 
-      <div className="flex items-center gap-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={generation.product_image_url}
-          alt={generation.product_name}
-          className="h-16 w-16 rounded-2xl object-cover"
-        />
-        {generation.extra_product_image_urls.map((url, i) => (
-          // eslint-disable-next-line @next/next/no-img-element
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="flex items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            key={url}
-            src={url}
-            alt={t.generationDetail.extraImageAlt(i + 1)}
-            title={t.generationDetail.extraImageAlt(i + 1)}
-            className="-ml-6 h-12 w-12 rounded-xl border-2 border-white object-cover"
+            src={generation.product_image_url}
+            alt={generation.product_name}
+            className="h-16 w-16 shrink-0 rounded-2xl object-cover"
           />
-        ))}
-        {generation.avatar_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={generation.avatar_url}
-            alt={t.generationDetail.avatarAlt}
-            title={t.generationDetail.avatarAlt}
-            className="-ml-6 h-10 w-10 rounded-full border-2 border-white object-cover"
-          />
-        )}
-        <div className="flex flex-1 flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink)]">
+          {generation.extra_product_image_urls.map((url, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={url}
+              src={url}
+              alt={t.generationDetail.extraImageAlt(i + 1)}
+              title={t.generationDetail.extraImageAlt(i + 1)}
+              className="-ml-6 h-12 w-12 shrink-0 rounded-xl border-2 border-white object-cover"
+            />
+          ))}
+          {generation.avatar_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={generation.avatar_url}
+              alt={t.generationDetail.avatarAlt}
+              title={t.generationDetail.avatarAlt}
+              className="-ml-6 h-10 w-10 shrink-0 rounded-full border-2 border-white object-cover"
+            />
+          )}
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h1 className="break-words text-2xl font-semibold tracking-tight text-[var(--ink)]">
             {generation.product_name}
           </h1>
           {generation.custom_prompt && (
@@ -202,17 +204,19 @@ export function GenerationDetail({ id }: { id: string }) {
             </p>
           )}
         </div>
-        <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)]">
-          {generation.aspect_ratio}
-        </span>
-        <StatusBadge status={generation.status} />
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="rounded-full px-4 py-2 text-[13px] font-medium text-[var(--red)] transition-colors hover:bg-[var(--bg-secondary)] disabled:opacity-40"
-        >
-          {deleting ? t.common.deleting : t.common.delete}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)]">
+            {generation.aspect_ratio}
+          </span>
+          <StatusBadge status={generation.status} />
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="rounded-full px-4 py-2 text-[13px] font-medium text-[var(--red)] transition-colors hover:bg-[var(--bg-secondary)] disabled:opacity-40"
+          >
+            {deleting ? t.common.deleting : t.common.delete}
+          </button>
+        </div>
       </div>
 
       <div
@@ -227,7 +231,7 @@ export function GenerationDetail({ id }: { id: string }) {
             key={video.id}
             className="card-shadow group relative flex flex-col overflow-hidden rounded-3xl bg-[var(--bg-secondary)]"
           >
-            <div className="absolute right-3 top-3 z-10 flex gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="absolute right-3 top-3 z-10 flex gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 pointer-coarse:opacity-100">
               {video.status === "completed" && video.video_url && (
                 <button
                   onClick={() => handleDownloadVideo(video.video_url!, video.script_index)}

@@ -47,8 +47,8 @@ export function GenerationCard({
         alt={generation.product_name}
         className="h-14 w-14 shrink-0 rounded-xl object-cover"
       />
-      <div className="flex flex-1 flex-col gap-1">
-        <span className="text-[15px] font-medium text-[var(--ink)]">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="truncate text-[15px] font-medium text-[var(--ink)]">
           {generation.product_name}
         </span>
         <span className="text-[12px] text-[var(--ink-tertiary)]">
@@ -59,7 +59,7 @@ export function GenerationCard({
       <button
         onClick={handleDelete}
         aria-label={t.generationCard.deleteAria}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[var(--ink-tertiary)] opacity-0 transition-opacity hover:bg-[var(--bg-secondary)] hover:text-[var(--red)] group-hover:opacity-100"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[var(--ink-tertiary)] opacity-0 transition-opacity hover:bg-[var(--bg-secondary)] hover:text-[var(--red)] group-hover:opacity-100 pointer-coarse:opacity-100"
       >
         ✕
       </button>
