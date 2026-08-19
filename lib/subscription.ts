@@ -49,7 +49,10 @@ export function consumePendingPlan(): PlanId | null {
  */
 export function openCheckoutAndWatch(url: string, onGiveUp?: () => void) {
   if (typeof window === "undefined") return;
-  const popup = window.open(url, "_blank", "noopener,noreferrer");
+  // No "noopener" here on purpose — we need the returned reference to poll
+  // .closed and call .close() on the tab later. window.open() with
+  // "noopener" always returns null, which silently broke this entirely.
+  const popup = window.open(url, "_blank");
   if (!popup) {
     onGiveUp?.();
     return;
