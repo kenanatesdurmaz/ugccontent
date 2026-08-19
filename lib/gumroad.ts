@@ -10,12 +10,26 @@ export const GUMROAD_CHECKOUT_URLS: Record<PlanId, string> = {
   pro: "https://kenanate.gumroad.com/l/Pro",
 };
 
+/**
+ * Extra permalink -> plan aliases, for products whose checkout URL slug
+ * (above) doesn't match the permalink Gumroad's Sales API actually reports
+ * for `product_permalink`. Confirmed via a real "Send test ping": Starter's
+ * checkout link reads "/l/Starter" but the sale itself still reports the
+ * original auto-generated "fzjfi" permalink.
+ */
+const PERMALINK_ALIASES: Partial<Record<PlanId, string[]>> = {
+  starter: ["fzjfi"],
+};
+
 /** Reverse lookup: Gumroad product permalink (the `/l/<permalink>` slug) -> our plan id. */
-const PERMALINK_TO_PLAN: Record<string, PlanId> = Object.fromEntries(
-  Object.entries(GUMROAD_CHECKOUT_URLS)
+const PERMALINK_TO_PLAN: Record<string, PlanId> = Object.fromEntries([
+  ...Object.entries(GUMROAD_CHECKOUT_URLS)
     .filter(([, url]) => url)
-    .map(([plan, url]) => [new URL(url).pathname.split("/").pop()!, plan as PlanId])
-);
+    .map(([plan, url]) => [new URL(url).pathname.split("/").pop()!, plan as PlanId]),
+  ...Object.entries(PERMALINK_ALIASES).flatMap(([plan, aliases]) =>
+    aliases!.map((alias) => [alias, plan as PlanId])
+  ),
+]);
 
 export function permalinkToPlan(permalink: string): PlanId | null {
   return PERMALINK_TO_PLAN[permalink] ?? null;
