@@ -3,26 +3,21 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { PLANS, type PlanId } from "@/lib/plans";
 import { getSubscription, setSubscriptionPlan } from "@/lib/subscription-server";
 import { notifySubscriptionCreated } from "@/lib/admin-notifications-server";
+import { isAdminUser } from "@/lib/admin";
 
 const PLAN_IDS = Object.keys(PLANS) as PlanId[];
 
 /**
- * No real payment provider is wired up yet, so "subscribing" just creates
- * the subscription row directly. Swap this for a Stripe checkout + webhook
- * once real billing exists — the credit system itself already works for
- * real off of the `subscriptions` table.
- *
- * The admin notification below is fired only after the subscription is
- * durably committed, using values read back from the database (never
- * anything from the request body) — the same shape a real payment
- * webhook handler would follow, just without a real payment behind it
- * yet. Swap the trigger point for a verified webhook event once Stripe
- * (or similar) is wired up; `notifySubscriptionCreated`'s idempotency
- * (unique `event_id`) is already built for that.
+ * Real subscriptions are now granted by the verified Gumroad webhook
+ * (app/api/webhooks/gumroad), triggered by an actual payment — see
+ * lib/gumroad.ts. This route directly grants credits with no payment
+ * behind it, so it's restricted to admins only (manual grants/testing);
+ * it used to be callable by any signed-in user back when there was no
+ * real payment provider at all.
  */
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
-  if (!userId) {
+  if (!userId || !isAdminUser(userId)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

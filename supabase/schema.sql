@@ -85,6 +85,24 @@ create table if not exists admin_notifications (
 
 create index if not exists idx_admin_notifications_status on admin_notifications(status);
 
+-- Idempotency ledger for Gumroad "Ping" webhook events (see
+-- migrations/013_gumroad_sales.sql). Unique sale_id makes credit granting
+-- idempotent — a retried or duplicate ping can never grant credits twice.
+create table if not exists gumroad_sales (
+  id uuid primary key default gen_random_uuid(),
+  sale_id text not null unique,
+  gumroad_subscription_id text,
+  clerk_user_id text,
+  plan text check (plan in ('starter', 'creator', 'pro')),
+  price_cents int not null,
+  currency text not null,
+  raw jsonb not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_gumroad_sales_clerk_user_id on gumroad_sales(clerk_user_id);
+create index if not exists idx_gumroad_sales_gumroad_subscription_id on gumroad_sales(gumroad_subscription_id);
+
 -- Storage buckets used by the app. Public read so <video>/<img> tags can
 -- load directly; all writes go through the server (service role key), so
 -- public read does not expose write access.

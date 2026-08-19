@@ -1,15 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import type { ReactNode } from "react";
 import type { PlanId } from "@/lib/plans";
-import { markJustSubscribed, setPendingPlan } from "@/lib/subscription";
+import { setPendingPlan } from "@/lib/subscription";
+import { getCheckoutUrl } from "@/lib/gumroad";
 
 /**
- * No real payment provider is wired up yet, so "subscribing" just calls
- * POST /api/subscribe, which creates a real subscriptions row (plan +
- * credits) in Supabase — same sign-in gating as DashboardCta.
+ * "Subscribing" now sends the user to the real Gumroad checkout for the
+ * plan, with their Clerk user id attached as a URL param — Gumroad echoes
+ * it back in the sale's url_params, which is how the verified webhook
+ * (app/api/webhooks/gumroad) attributes a completed payment to this
+ * account and grants credits. Nothing is granted client-side anymore.
  */
 export function SubscribeCta({
   plan,
@@ -20,29 +22,13 @@ export function SubscribeCta({
   className?: string;
   children: ReactNode;
 }) {
-  const { isSignedIn } = useUser();
-  const router = useRouter();
-
-  async function subscribe() {
-    await fetch("/api/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan }),
-    });
-    markJustSubscribed();
-  }
+  const { isSignedIn, user } = useUser();
 
   if (isSignedIn) {
     return (
-      <button
-        className={className}
-        onClick={async () => {
-          await subscribe();
-          router.push("/dashboard");
-        }}
-      >
+      <a href={getCheckoutUrl(plan, user.id)} className={className}>
         {children}
-      </button>
+      </a>
     );
   }
 

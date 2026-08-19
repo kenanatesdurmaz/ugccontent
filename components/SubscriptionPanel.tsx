@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import { PLANS, formatCredits } from "@/lib/plans";
-import { consumePendingPlan, markJustSubscribed } from "@/lib/subscription";
+import { consumePendingPlan } from "@/lib/subscription";
+import { getCheckoutUrl } from "@/lib/gumroad";
 
 type SubscriptionState = {
   plan: "starter" | "creator" | "pro";
@@ -17,18 +19,22 @@ type SubscriptionState = {
 export function SubscriptionPanel() {
   const [subscription, setSubscription] = useState<SubscriptionState>(null);
   const [loaded, setLoaded] = useState(false);
+  const { user, isLoaded: userLoaded } = useUser();
 
   useEffect(() => {
+    if (!userLoaded) return;
+
+    // A plan picked before sign-in (see SubscribeCta) sends the user to
+    // Gumroad checkout now that we know who they are — credits are
+    // granted by the verified webhook once the payment actually
+    // completes, not here.
+    const pendingPlan = consumePendingPlan();
+    if (pendingPlan && user) {
+      window.location.href = getCheckoutUrl(pendingPlan, user.id);
+      return;
+    }
+
     async function init() {
-      const pendingPlan = consumePendingPlan();
-      if (pendingPlan) {
-        await fetch("/api/subscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: pendingPlan }),
-        });
-        markJustSubscribed();
-      }
       const res = await fetch("/api/subscription");
       if (res.ok) {
         const data = await res.json();
@@ -38,7 +44,7 @@ export function SubscriptionPanel() {
       window.dispatchEvent(new Event("subscription-changed"));
     }
     init();
-  }, []);
+  }, [userLoaded, user]);
 
   if (!loaded) {
     return (
