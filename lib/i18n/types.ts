@@ -108,6 +108,7 @@ export type Dictionary = {
     failedStatus: string;
     generatingStatus: string;
     variantLabel: (n: number) => string;
+    downloadAria: string;
   };
   subscriptionPanel: {
     activePlan: string;

@@ -6,6 +6,7 @@ import type { AspectRatio, Resolution } from "@/lib/types";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { creditCost, formatCredits } from "@/lib/plans";
 import { useLanguage } from "@/components/LanguageProvider";
+import { trackEvent } from "@/lib/analytics";
 
 type SubscriptionState = {
   plan: "starter" | "creator" | "pro";
@@ -208,6 +209,14 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
         }
         throw new Error(genData.error ?? t.generationForm.errorCreateFailed);
       }
+
+      trackEvent("video_generation_started", {
+        generation_id: genData.id,
+        aspect_ratio: aspectRatio,
+        resolution,
+        duration,
+        credit_cost: cost,
+      });
 
       setProductName("");
       setCustomPrompt("");

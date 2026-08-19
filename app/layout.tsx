@@ -4,6 +4,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/Navbar";
 import { DialogProvider } from "@/components/DialogProvider";
 import { LanguageProvider } from "@/components/LanguageProvider";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { AuthAnalytics } from "@/components/AuthAnalytics";
 import "./globals.css";
 
 const onest = Onest({
@@ -30,8 +32,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <html lang="en" className={`${onest.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col bg-white text-[var(--ink)]">
+          <GoogleAnalytics />
           <LanguageProvider>
             <DialogProvider>
+              <AuthAnalytics />
               <Navbar />
               <div className="flex flex-1 flex-col pb-24 pt-16 sm:pb-0">{children}</div>
             </DialogProvider>

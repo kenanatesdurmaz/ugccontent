@@ -6,6 +6,7 @@ import type { PlanId } from "@/lib/plans";
 import { setPendingPlan, openCheckoutAndWatch } from "@/lib/subscription";
 import { getCheckoutUrl } from "@/lib/gumroad";
 import { useLanguage } from "@/components/LanguageProvider";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * "Subscribing" now sends the user to the real Gumroad checkout for the
@@ -35,6 +36,7 @@ export function SubscribeCta({
         className={className}
         disabled={waiting}
         onClick={() => {
+          trackEvent("subscription_started", { plan });
           setWaiting(true);
           openCheckoutAndWatch(getCheckoutUrl(plan, email), () => setWaiting(false));
         }}

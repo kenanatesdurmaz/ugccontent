@@ -7,6 +7,7 @@ import type { Generation } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useDialog } from "@/components/DialogProvider";
 import { useLanguage } from "@/components/LanguageProvider";
+import { trackEvent } from "@/lib/analytics";
 
 const ASPECT_CLASS: Record<string, string> = {
   "9:16": "aspect-[9/16]",
@@ -22,6 +23,7 @@ export function GenerationDetail({ id }: { id: string }) {
   const [notFound, setNotFound] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const completedTrackedRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +63,39 @@ export function GenerationDetail({ id }: { id: string }) {
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, [generation?.status, id]);
+
+  useEffect(() => {
+    if (generation?.status === "completed" && !completedTrackedRef.current) {
+      completedTrackedRef.current = true;
+      trackEvent("video_generation_completed", {
+        generation_id: generation.id,
+        resolution: generation.resolution,
+        aspect_ratio: generation.aspect_ratio,
+        video_count: generation.generation_videos.length,
+      });
+    }
+  }, [generation]);
+
+  async function handleDownloadVideo(videoUrl: string, scriptIndex: number) {
+    trackEvent("video_downloaded", {
+      generation_id: id,
+      script_index: scriptIndex,
+    });
+    try {
+      const res = await fetch(videoUrl);
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = `${generation?.product_name ?? "video"}-${scriptIndex + 1}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      window.open(videoUrl, "_blank", "noopener,noreferrer");
+    }
+  }
 
   async function handleDelete() {
     if (!generation) return;
@@ -192,13 +227,24 @@ export function GenerationDetail({ id }: { id: string }) {
             key={video.id}
             className="card-shadow group relative flex flex-col overflow-hidden rounded-3xl bg-[var(--bg-secondary)]"
           >
-            <button
-              onClick={() => handleDeleteVideo(video.id, video.script_index)}
-              aria-label={t.generationDetail.deleteVariantAria}
-              className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/60 group-hover:opacity-100"
-            >
-              ✕
-            </button>
+            <div className="absolute right-3 top-3 z-10 flex gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+              {video.status === "completed" && video.video_url && (
+                <button
+                  onClick={() => handleDownloadVideo(video.video_url!, video.script_index)}
+                  aria-label={t.generationDetail.downloadAria}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur transition-colors hover:bg-black/60"
+                >
+                  ⬇
+                </button>
+              )}
+              <button
+                onClick={() => handleDeleteVideo(video.id, video.script_index)}
+                aria-label={t.generationDetail.deleteVariantAria}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur transition-colors hover:bg-black/60"
+              >
+                ✕
+              </button>
+            </div>
             <div
               className={`relative flex items-center justify-center overflow-hidden bg-black ${
                 ASPECT_CLASS[generation.aspect_ratio] ?? "aspect-[9/16]"

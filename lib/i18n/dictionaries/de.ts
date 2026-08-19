@@ -164,6 +164,7 @@ export const de: Dictionary = {
     failedStatus: "Generierung fehlgeschlagen",
     generatingStatus: "Video wird erstellt...",
     variantLabel: (n) => `Variante ${n}`,
+    downloadAria: "Video herunterladen",
   },
   subscriptionPanel: {
     activePlan: "Aktiver Plan",
