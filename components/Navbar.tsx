@@ -23,7 +23,7 @@ export function Navbar() {
 
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between gap-2 px-4 py-4 sm:px-6">
+      <div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between gap-2 border-b border-[var(--line)] bg-[var(--bg)]/70 px-4 py-4 backdrop-blur-lg sm:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <svg
             width="24"

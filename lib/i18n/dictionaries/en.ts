@@ -178,19 +178,21 @@ export const en: Dictionary = {
   },
   accountSubscription: {
     cancelConfirm:
-      "Are you sure you want to cancel your subscription? You can keep using it until the end of your current paid period.",
+      "Are you sure you want to cancel your subscription? You can keep using it until the end of your current paid period. Note: this stops it from renewing here, but Gumroad will still bill you unless you also cancel there — see the link below.",
     cancelTitle: "Cancel subscription",
     confirmCancel: "Yes, cancel",
     noActiveSubscription: "You don't have an active subscription.",
     activePlan: "Active plan",
     creditsRemaining: (used, total) => `${used} / ${total} credits left`,
     cancelledMessage: (date) =>
-      `Your subscription has been cancelled. It'll stay active until ${date}, then won't renew.`,
+      `Your subscription has been cancelled here. It'll stay active until ${date}, then won't renew — but Gumroad will keep billing you until you also cancel there.`,
     resume: "Undo cancellation",
     nextRenewal: (date) => `Next renewal: ${date}`,
     cancelButton: "Cancel subscription",
     finePrint: (date) =>
-      `If you cancel, your plan stays active until the end of your paid period (${date}); no further payment will be taken and the subscription will end there.`,
+      `If you cancel, your plan stays active until the end of your paid period (${date}) and won't renew here — but this doesn't cancel the Gumroad charge itself.`,
+    gumroadNotice: "We can't cancel the Gumroad charge for you — Gumroad's API doesn't allow it. To stop being billed, cancel it yourself: from the link in your Gumroad receipt email, or in your Gumroad Library.",
+    gumroadLink: "Open Gumroad Library",
   },
   toast: {
     subscribed: "Subscribed",

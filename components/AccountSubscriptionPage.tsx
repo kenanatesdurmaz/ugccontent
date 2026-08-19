@@ -97,13 +97,26 @@ export function AccountSubscriptionPage() {
           <p className="text-[13px] text-[var(--ink-secondary)]">
             {t.accountSubscription.cancelledMessage(renewsDate)}
           </p>
-          <button
-            onClick={handleResume}
-            disabled={working}
-            className="pill-black self-start rounded-full px-4 py-2 text-[13px] font-medium disabled:opacity-40"
-          >
-            {t.accountSubscription.resume}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleResume}
+              disabled={working}
+              className="pill-black rounded-full px-4 py-2 text-[13px] font-medium disabled:opacity-40"
+            >
+              {t.accountSubscription.resume}
+            </button>
+            <a
+              href="https://app.gumroad.com/library"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full px-4 py-2 text-[13px] font-medium text-[var(--accent)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-elevated)]"
+            >
+              {t.accountSubscription.gumroadLink}
+            </a>
+          </div>
+          <p className="text-[11px] text-[var(--ink-tertiary)]">
+            {t.accountSubscription.gumroadNotice}
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-3 rounded-2xl bg-[var(--bg-secondary)] p-4">
@@ -113,7 +126,7 @@ export function AccountSubscriptionPage() {
           <button
             onClick={handleCancel}
             disabled={working}
-            className="self-start rounded-full px-4 py-2 text-[13px] font-medium text-[var(--red)] ring-1 ring-[var(--line)] transition-colors hover:bg-white disabled:opacity-40"
+            className="self-start rounded-full px-4 py-2 text-[13px] font-medium text-[var(--red)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-elevated)] disabled:opacity-40"
           >
             {t.accountSubscription.cancelButton}
           </button>

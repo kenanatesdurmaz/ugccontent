@@ -132,6 +132,8 @@ export type Dictionary = {
     nextRenewal: (date: string) => string;
     cancelButton: string;
     finePrint: (date: string) => string;
+    gumroadNotice: string;
+    gumroadLink: string;
   };
   toast: {
     subscribed: string;

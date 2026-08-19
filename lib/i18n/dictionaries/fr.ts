@@ -178,19 +178,21 @@ export const fr: Dictionary = {
   },
   accountSubscription: {
     cancelConfirm:
-      "Voulez-vous vraiment annuler votre abonnement ? Vous pourrez continuer à l'utiliser jusqu'à la fin de votre période payée en cours.",
+      "Voulez-vous vraiment annuler votre abonnement ? Vous pourrez continuer à l'utiliser jusqu'à la fin de votre période payée en cours. Remarque : cela arrête juste le renouvellement ici — Gumroad continuera de vous facturer si vous n'annulez pas aussi là-bas, voir le lien ci-dessous.",
     cancelTitle: "Annuler l'abonnement",
     confirmCancel: "Oui, annuler",
     noActiveSubscription: "Vous n'avez pas d'abonnement actif.",
     activePlan: "Forfait actif",
     creditsRemaining: (used, total) => `${used} / ${total} crédits restants`,
     cancelledMessage: (date) =>
-      `Votre abonnement a été annulé. Il restera actif jusqu'au ${date}, puis ne sera pas renouvelé.`,
+      `Votre abonnement a été annulé ici. Il restera actif jusqu'au ${date}, puis ne sera pas renouvelé — mais Gumroad continuera de vous facturer tant que vous n'annulez pas aussi là-bas.`,
     resume: "Annuler la résiliation",
     nextRenewal: (date) => `Prochain renouvellement : ${date}`,
     cancelButton: "Annuler l'abonnement",
     finePrint: (date) =>
-      `Si vous annulez, votre forfait reste actif jusqu'à la fin de votre période payée (${date}) ; aucun autre paiement ne sera prélevé et l'abonnement se terminera à cette date.`,
+      `Si vous annulez, votre forfait reste actif jusqu'à la fin de votre période payée (${date}) et ne se renouvellera pas ici — mais cela n'annule pas le prélèvement Gumroad.`,
+    gumroadNotice: "Nous ne pouvons pas annuler le prélèvement Gumroad à votre place — l'API de Gumroad ne le permet pas. Pour arrêter d'être facturé, annulez-le vous-même : via le lien dans votre reçu Gumroad, ou dans votre Bibliothèque Gumroad.",
+    gumroadLink: "Ouvrir la Bibliothèque Gumroad",
   },
   toast: {
     subscribed: "Abonné",
