@@ -1,15 +1,30 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { Generation } from "@/lib/types";
 import { GenerationForm } from "@/components/GenerationForm";
 import { GenerationCard } from "@/components/GenerationCard";
 import { SubscribedToast } from "@/components/SubscribedToast";
 import { SubscriptionPanel } from "@/components/SubscriptionPanel";
+import { markJustSubscribed } from "@/lib/subscription";
 
 export function DashboardClient() {
   const [generations, setGenerations] = useState<Generation[] | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Gumroad redirects back here (?subscribed=1) once a real payment
+    // completes — the credit grant itself already happened server-side via
+    // the verified webhook, this just surfaces the "Abone olundu" toast and
+    // strips the param so refreshing the page doesn't re-trigger it.
+    if (searchParams.get("subscribed") === "1") {
+      markJustSubscribed();
+      router.replace("/dashboard");
+    }
+  }, [searchParams, router]);
 
   const loadGenerations = useCallback(async () => {
     const res = await fetch("/api/generations");
