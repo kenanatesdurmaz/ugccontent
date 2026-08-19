@@ -253,7 +253,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
             {t.generationForm.productImageLabel}
           </label>
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--bg-elevated)]">
               {preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={preview} alt={t.generationForm.productImageAlt} className="h-full w-full object-cover" />
@@ -266,7 +266,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="block w-full min-w-0 text-[12px] text-[var(--ink-secondary)] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--ink)] file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-white hover:file:bg-black"
+              className="block w-full min-w-0 text-[12px] text-[var(--ink-secondary)] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--ink-fixed)] file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-white hover:file:bg-black"
             />
           </div>
         </div>
@@ -280,7 +280,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
             placeholder={t.generationForm.productNamePlaceholder}
-            className="rounded-xl border-none bg-white px-3 py-2.5 text-[13px] text-[var(--ink)] outline-none ring-1 ring-transparent placeholder:text-[var(--ink-tertiary)] focus:ring-2 focus:ring-[var(--accent)]"
+            className="rounded-xl border-none bg-[var(--bg-elevated)] px-3 py-2.5 text-[13px] text-[var(--ink)] outline-none ring-1 ring-transparent placeholder:text-[var(--ink-tertiary)] focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
       </div>
@@ -294,7 +294,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
             {extraImages.map((img, i) => (
               <div
                 key={img.preview}
-                className="group relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-white"
+                className="group relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-[var(--bg-elevated)]"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -313,7 +313,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
               </div>
             ))}
             {extraImages.length < MAX_EXTRA_IMAGES && (
-              <label className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-white text-[var(--ink-tertiary)] ring-1 ring-[var(--line)] hover:bg-[var(--bg-tertiary)]">
+              <label className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-[var(--bg-elevated)] text-[var(--ink-tertiary)] ring-1 ring-[var(--line)] hover:bg-[var(--bg-tertiary)]">
                 ＋
                 <input
                   ref={extraFileInputRef}
@@ -333,7 +333,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
             {t.generationForm.avatarLabel} <span className="text-[var(--ink-tertiary)]">{t.generationForm.optional}</span>
           </label>
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--bg-elevated)]">
               {avatarPreview ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -350,7 +350,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
               type="file"
               accept="image/*"
               onChange={handleAvatarChange}
-              className="block w-full min-w-0 text-[12px] text-[var(--ink-secondary)] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--ink)] file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-white hover:file:bg-black"
+              className="block w-full min-w-0 text-[12px] text-[var(--ink-secondary)] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--ink-fixed)] file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-white hover:file:bg-black"
             />
           </div>
         </div>
@@ -370,8 +370,8 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
                 aria-pressed={aspectRatio === opt.value}
                 className={`flex flex-1 flex-col items-center gap-1 rounded-xl border px-2 py-2 text-[12px] font-medium transition-colors ${
                   aspectRatio === opt.value
-                    ? "border-[var(--accent)] bg-white text-[var(--ink)] ring-1 ring-[var(--accent)]"
-                    : "border-transparent bg-white text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
+                    ? "border-[var(--accent)] bg-[var(--bg-elevated)] text-[var(--ink)] ring-1 ring-[var(--accent)]"
+                    : "border-transparent bg-[var(--bg-elevated)] text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
                 }`}
               >
                 <span
@@ -400,8 +400,8 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
                 aria-pressed={resolution === opt.value}
                 className={`flex flex-1 items-center justify-center rounded-xl border px-2 py-2 text-[12px] font-medium transition-colors ${
                   resolution === opt.value
-                    ? "border-[var(--accent)] bg-white text-[var(--ink)] ring-1 ring-[var(--accent)]"
-                    : "border-transparent bg-white text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
+                    ? "border-[var(--accent)] bg-[var(--bg-elevated)] text-[var(--ink)] ring-1 ring-[var(--accent)]"
+                    : "border-transparent bg-[var(--bg-elevated)] text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
                 }`}
               >
                 {opt.label}
@@ -453,7 +453,7 @@ export function GenerationForm({ onCreated }: { onCreated: () => void }) {
           onChange={(e) => setCustomPrompt(e.target.value)}
           placeholder={t.generationForm.promptPlaceholder}
           rows={2}
-          className="resize-none rounded-xl border-none bg-white px-3 py-2.5 text-[13px] text-[var(--ink)] outline-none ring-1 ring-transparent placeholder:text-[var(--ink-tertiary)] focus:ring-2 focus:ring-[var(--accent)]"
+          className="resize-none rounded-xl border-none bg-[var(--bg-elevated)] px-3 py-2.5 text-[13px] text-[var(--ink)] outline-none ring-1 ring-transparent placeholder:text-[var(--ink-tertiary)] focus:ring-2 focus:ring-[var(--accent)]"
         />
       </div>
 

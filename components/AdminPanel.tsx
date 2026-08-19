@@ -172,8 +172,8 @@ export function AdminPanel() {
             disabled={working}
             className={`flex-1 rounded-xl border px-4 py-3 text-[13px] font-semibold transition-colors disabled:opacity-40 ${
               settings.mode === "live"
-                ? "border-[var(--accent)] bg-white text-[var(--ink)] ring-1 ring-[var(--accent)]"
-                : "border-transparent bg-white text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
+                ? "border-[var(--accent)] bg-[var(--bg-elevated)] text-[var(--ink)] ring-1 ring-[var(--accent)]"
+                : "border-transparent bg-[var(--bg-elevated)] text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
             }`}
           >
             LIVE MODE
@@ -183,8 +183,8 @@ export function AdminPanel() {
             disabled={working || !testModeAllowed}
             className={`flex-1 rounded-xl border px-4 py-3 text-[13px] font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
               settings.mode === "test"
-                ? "border-[var(--accent)] bg-white text-[var(--ink)] ring-1 ring-[var(--accent)]"
-                : "border-transparent bg-white text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
+                ? "border-[var(--accent)] bg-[var(--bg-elevated)] text-[var(--ink)] ring-1 ring-[var(--accent)]"
+                : "border-transparent bg-[var(--bg-elevated)] text-[var(--ink-secondary)] hover:bg-[var(--bg-tertiary)]"
             }`}
           >
             TEST MODE
@@ -254,7 +254,7 @@ export function AdminPanel() {
             <button
               onClick={retryFailedNotifications}
               disabled={notifWorking}
-              className="rounded-full bg-white px-4 py-2 text-[13px] font-medium text-[var(--ink)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-tertiary)] disabled:opacity-40"
+              className="rounded-full bg-[var(--bg-elevated)] px-4 py-2 text-[13px] font-medium text-[var(--ink)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-tertiary)] disabled:opacity-40"
             >
               Retry failed
             </button>

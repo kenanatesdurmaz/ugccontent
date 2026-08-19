@@ -171,8 +171,8 @@ export default function Home() {
           <div className="mt-16 grid gap-6 sm:grid-cols-3">
             {landing.steps.map((step, i) => (
               <ScrollReveal key={step.title} delay={i * 120}>
-                <div className="card-shadow flex h-full flex-col gap-4 rounded-3xl bg-white p-8">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ink)] text-[15px] font-semibold text-white">
+                <div className="card-shadow flex h-full flex-col gap-4 rounded-3xl bg-[var(--bg-elevated)] p-8">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ink-fixed)] text-[15px] font-semibold text-white">
                     {i + 1}
                   </span>
                   <h3 className="text-lg font-semibold tracking-tight text-[var(--ink)]">
@@ -235,7 +235,7 @@ export default function Home() {
           <div className="mt-12 flex flex-col gap-3">
             {landing.faqs.map((faq, i) => (
               <ScrollReveal key={faq.q} delay={i * 70}>
-                <details className="faq-item card-shadow rounded-2xl bg-white px-6 py-5">
+                <details className="faq-item card-shadow rounded-2xl bg-[var(--bg-elevated)] px-6 py-5">
                   <summary className="flex items-center justify-between gap-4">
                     <span className="text-[15px] font-medium text-[var(--ink)]">
                       {faq.q}
@@ -259,7 +259,7 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-[var(--ink)] py-24">
+      <section className="bg-[var(--ink-fixed)] py-24">
         <ScrollReveal className="mx-auto flex max-w-2xl flex-col items-center gap-6 px-6 text-center">
           <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-semibold tracking-[-0.03em] text-white">
             {landing.finalHeading}
@@ -267,7 +267,7 @@ export default function Home() {
           <p className="max-w-md text-[15px] leading-relaxed text-white/60">
             {landing.finalSubtext}
           </p>
-          <DashboardCta className="rounded-full bg-white px-7 py-3 text-[15px] font-medium text-[var(--ink)] transition-transform hover:scale-[1.03] active:scale-[0.98]">
+          <DashboardCta className="rounded-full bg-white px-7 py-3 text-[15px] font-medium text-[var(--ink-fixed)] transition-transform hover:scale-[1.03] active:scale-[0.98]">
             {landing.ctaPrimary}
           </DashboardCta>
         </ScrollReveal>

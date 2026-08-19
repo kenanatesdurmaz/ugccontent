@@ -105,12 +105,12 @@ export function SubscriptionPanel() {
         </h3>
       </div>
 
-      <span className="w-fit rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[var(--ink)] ring-1 ring-[var(--line)]">
+      <span className="w-fit rounded-full bg-[var(--bg-elevated)] px-3 py-1.5 text-[13px] font-semibold text-[var(--ink)] ring-1 ring-[var(--line)]">
         {t.subscriptionPanel.creditsRemaining(formatCredits(subscription.creditsRemaining))}
       </span>
 
       <div className="flex flex-col gap-1.5">
-        <div className="h-2 w-full overflow-hidden rounded-full bg-white">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--bg-elevated)]">
           <div
             className="h-full rounded-full bg-[var(--accent)] transition-all"
             style={{ width: `${pct}%` }}
@@ -132,7 +132,7 @@ export function SubscriptionPanel() {
       {subscription.plan !== "pro" && (
         <Link
           href="/pricing"
-          className="mt-1 self-start rounded-full bg-white px-4 py-2 text-[13px] font-medium text-[var(--ink)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-tertiary)]"
+          className="mt-1 self-start rounded-full bg-[var(--bg-elevated)] px-4 py-2 text-[13px] font-medium text-[var(--ink)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-tertiary)]"
         >
           {t.subscriptionPanel.upgradePlan}
         </Link>

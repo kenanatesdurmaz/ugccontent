@@ -7,6 +7,7 @@ import { NavBar } from "@/components/ui/tubelight-navbar";
 import { AccountSubscriptionPage } from "@/components/AccountSubscriptionPage";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar() {
   const { isSignedIn } = useUser();
@@ -42,6 +43,7 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <LanguageSwitcher />
 
           <Show when="signed-in">

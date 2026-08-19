@@ -65,7 +65,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
           onClick={() => close(false)}
         >
           <div
-            className="card-shadow reveal relative w-full max-w-sm rounded-3xl bg-white p-8 text-center"
+            className="card-shadow reveal relative w-full max-w-sm rounded-3xl bg-[var(--bg-elevated)] p-8 text-center"
             onClick={(e) => e.stopPropagation()}
           >
             {state.kind === "confirm" ? (

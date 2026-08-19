@@ -13,7 +13,7 @@ export function UpgradeModal({ onClose }: { onClose: () => void }) {
       onClick={onClose}
     >
       <div
-        className="card-shadow relative w-full max-w-sm rounded-3xl bg-white p-8 text-center"
+        className="card-shadow relative w-full max-w-sm rounded-3xl bg-[var(--bg-elevated)] p-8 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <button

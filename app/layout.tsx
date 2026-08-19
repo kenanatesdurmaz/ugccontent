@@ -6,7 +6,12 @@ import { DialogProvider } from "@/components/DialogProvider";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { AuthAnalytics } from "@/components/AuthAnalytics";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
+
+// Applies the resolved theme before hydration/paint so there's no flash
+// of the wrong theme — mirrors ThemeProvider's own resolution logic.
+const themeInitScript = `(function(){try{var t=localStorage.getItem('ugcbeam_theme');var d=(t==='dark')||((t!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){}})();`;
 
 const onest = Onest({
   variable: "--font-onest",
@@ -31,15 +36,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       }}
     >
       <html lang="en" className={`${onest.variable} h-full antialiased`}>
-        <body className="min-h-full flex flex-col bg-white text-[var(--ink)]">
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
+        <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--ink)]">
           <GoogleAnalytics />
-          <LanguageProvider>
-            <DialogProvider>
-              <AuthAnalytics />
-              <Navbar />
-              <div className="flex flex-1 flex-col pb-24 pt-16 sm:pb-0">{children}</div>
-            </DialogProvider>
-          </LanguageProvider>
+          <ThemeProvider>
+            <LanguageProvider>
+              <DialogProvider>
+                <AuthAnalytics />
+                <Navbar />
+                <div className="flex flex-1 flex-col pb-24 pt-16 sm:pb-0">{children}</div>
+              </DialogProvider>
+            </LanguageProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

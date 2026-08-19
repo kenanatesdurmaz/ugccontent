@@ -39,7 +39,7 @@ export function GenerationCard({
   return (
     <Link
       href={`/dashboard/generations/${generation.id}`}
-      className="card-shadow group flex items-center gap-4 rounded-2xl bg-white p-3.5 transition-transform hover:-translate-y-0.5"
+      className="card-shadow group flex items-center gap-4 rounded-2xl bg-[var(--bg-elevated)] p-3.5 transition-transform hover:-translate-y-0.5"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

@@ -26,7 +26,7 @@ export function SubscribedToast() {
       onClick={() => setVisible(false)}
     >
       <div
-        className="reveal card-shadow relative flex aspect-square w-full max-w-[220px] flex-col items-center justify-center gap-3 rounded-3xl bg-white p-6 text-center"
+        className="reveal card-shadow relative flex aspect-square w-full max-w-[220px] flex-col items-center justify-center gap-3 rounded-3xl bg-[var(--bg-elevated)] p-6 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <button

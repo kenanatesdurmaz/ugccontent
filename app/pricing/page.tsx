@@ -71,7 +71,7 @@ export default function PricingPage() {
             key={plan.name}
             className={`card-shadow flex flex-col gap-6 rounded-3xl p-8 ${
               plan.highlighted
-                ? "bg-[var(--ink)] text-white"
+                ? "bg-[var(--ink-fixed)] text-white"
                 : "bg-[var(--bg-secondary)] text-[var(--ink)]"
             }`}
           >
@@ -125,11 +125,11 @@ export default function PricingPage() {
               plan={plan.id}
               className={`rounded-full px-5 py-3 text-center text-[14px] font-medium transition-colors ${
                 plan.highlighted
-                  ? "bg-white text-[var(--ink)] hover:bg-white/90"
-                  : "bg-[var(--ink)] text-white hover:bg-black"
+                  ? "bg-white text-[var(--ink-fixed)] hover:bg-white/90"
+                  : "bg-[var(--ink-fixed)] text-white hover:bg-black"
               }`}
               activeClassName={`rounded-full px-5 py-3 text-[14px] font-medium ${
-                plan.highlighted ? "bg-white/15 text-white" : "bg-white text-[var(--ink)]"
+                plan.highlighted ? "bg-white/15 text-white" : "bg-[var(--bg-elevated)] text-[var(--ink)]"
               }`}
             >
               {pricing.cta}
