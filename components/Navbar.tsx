@@ -32,7 +32,7 @@ export function Navbar() {
             className="shrink-0"
             aria-hidden
           >
-            <rect width="32" height="32" rx="8" fill="var(--ink)" />
+            <rect width="32" height="32" rx="8" fill="var(--ink-fixed)" />
             <path d="M10 11 L15 16 L10 21" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M16 11 L21 16 L16 21" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" opacity="0.62" />
             <path d="M22 11 L27 16 L22 21" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" opacity="0.32" />
@@ -44,7 +44,7 @@ export function Navbar() {
 
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
           <ThemeToggle />
-          <LanguageSwitcher className="min-w-0 rounded-full border border-[var(--line)] bg-white px-2 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)] focus:outline-none sm:px-3 sm:text-[13px]" />
+          <LanguageSwitcher className="min-w-0 rounded-full border border-[var(--line)] bg-[var(--bg-elevated)] px-2 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)] focus:outline-none sm:px-3 sm:text-[13px]" />
 
           <Show when="signed-in">
             <UserButton>
