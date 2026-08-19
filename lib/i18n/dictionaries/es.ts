@@ -178,7 +178,7 @@ export const es: Dictionary = {
   },
   accountSubscription: {
     cancelConfirm:
-      "¿Seguro que quieres cancelar tu suscripción? Podrás seguir usándola hasta el final de tu periodo pagado actual. Nota: esto detiene la renovación aquí, pero Gumroad te seguirá cobrando a menos que también canceles allí — mira el enlace de abajo.",
+      "¿Seguro que quieres cancelar tu suscripción? Podrás seguir usándola hasta el final de tu periodo pagado actual. Nota: esto detiene la renovación aquí, pero Gumroad te seguirá cobrando a menos que también canceles allí — abriremos tu Biblioteca de Gumroad en una nueva pestaña para que también termines eso.",
     cancelTitle: "Cancelar suscripción",
     confirmCancel: "Sí, cancelar",
     noActiveSubscription: "No tienes una suscripción activa.",
@@ -191,7 +191,7 @@ export const es: Dictionary = {
     cancelButton: "Cancelar suscripción",
     finePrint: (date) =>
       `Si cancelas, tu plan seguirá activo hasta el final de tu periodo pagado (${date}) y no se renovará aquí — pero esto no cancela el cobro de Gumroad.`,
-    gumroadNotice: "No podemos cancelar el cobro de Gumroad por ti — la API de Gumroad no lo permite. Para dejar de pagar, cancélalo tú mismo: desde el enlace en tu recibo de Gumroad, o en tu Biblioteca de Gumroad.",
+    gumroadNotice: "No podemos cancelar el cobro de Gumroad por ti — la API de Gumroad no lo permite. Abrimos tu Biblioteca de Gumroad en una nueva pestaña; cancela la membresía ahí para dejar de pagar (o usa el enlace de tu recibo de Gumroad).",
     gumroadLink: "Abrir Biblioteca de Gumroad",
   },
   toast: {

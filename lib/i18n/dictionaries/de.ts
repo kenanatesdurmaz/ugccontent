@@ -178,7 +178,7 @@ export const de: Dictionary = {
   },
   accountSubscription: {
     cancelConfirm:
-      "Möchtest du dein Abo wirklich kündigen? Du kannst es bis zum Ende deines aktuellen Zeitraums weiter nutzen. Hinweis: Das stoppt nur die Verlängerung hier — Gumroad bucht weiterhin ab, wenn du nicht auch dort kündigst, siehe Link unten.",
+      "Möchtest du dein Abo wirklich kündigen? Du kannst es bis zum Ende deines aktuellen Zeitraums weiter nutzen. Hinweis: Das stoppt nur die Verlängerung hier — Gumroad bucht weiterhin ab, wenn du nicht auch dort kündigst. Wir öffnen dafür deine Gumroad-Bibliothek in einem neuen Tab.",
     cancelTitle: "Abo kündigen",
     confirmCancel: "Ja, kündigen",
     noActiveSubscription: "Du hast kein aktives Abo.",
@@ -191,7 +191,7 @@ export const de: Dictionary = {
     cancelButton: "Abo kündigen",
     finePrint: (date) =>
       `Wenn du kündigst, bleibt dein Plan bis zum Ende deines bezahlten Zeitraums (${date}) aktiv und verlängert sich hier nicht mehr — das kündigt aber nicht die Abbuchung bei Gumroad.`,
-    gumroadNotice: "Wir können die Gumroad-Abbuchung nicht für dich kündigen — die Gumroad-API erlaubt das nicht. Kündige sie selbst: über den Link in deiner Gumroad-Quittung oder in deiner Gumroad-Bibliothek.",
+    gumroadNotice: "Wir können die Gumroad-Abbuchung nicht für dich kündigen — die Gumroad-API erlaubt das nicht. Wir haben deine Gumroad-Bibliothek in einem neuen Tab geöffnet; kündige die Mitgliedschaft dort, um die Abbuchung zu stoppen (oder nutze den Link in deiner Gumroad-Quittung).",
     gumroadLink: "Gumroad-Bibliothek öffnen",
   },
   toast: {

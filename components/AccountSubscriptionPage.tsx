@@ -48,6 +48,12 @@ export function AccountSubscriptionPage() {
     await refresh();
     window.dispatchEvent(new Event("subscription-changed"));
     setWorking(false);
+    // We can't cancel the actual Gumroad charge server-side (their API has
+    // no seller-side cancel endpoint) — opening this for the user turns
+    // "cancel here, then remember to also cancel on Gumroad" into one
+    // motion instead of two. The visible link below is the fallback in
+    // case the popup gets blocked.
+    window.open("https://app.gumroad.com/library", "_blank", "noopener,noreferrer");
   }
 
   async function handleResume() {
