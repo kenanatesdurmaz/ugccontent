@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { PLANS, formatCredits } from "@/lib/plans";
-import { consumePendingPlan } from "@/lib/subscription";
+import { consumePendingPlan, openCheckoutAndWatch } from "@/lib/subscription";
 import { getCheckoutUrl } from "@/lib/gumroad";
 
 type SubscriptionState = {
@@ -31,7 +31,7 @@ export function SubscriptionPanel() {
     const pendingPlan = consumePendingPlan();
     const email = user?.primaryEmailAddress?.emailAddress;
     if (pendingPlan && email) {
-      window.open(getCheckoutUrl(pendingPlan, email), "_blank", "noopener,noreferrer");
+      openCheckoutAndWatch(getCheckoutUrl(pendingPlan, email));
     }
 
     async function init() {

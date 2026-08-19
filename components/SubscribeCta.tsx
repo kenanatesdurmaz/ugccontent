@@ -1,9 +1,9 @@
 "use client";
 
 import { SignInButton, useUser } from "@clerk/nextjs";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { PlanId } from "@/lib/plans";
-import { setPendingPlan } from "@/lib/subscription";
+import { setPendingPlan, openCheckoutAndWatch } from "@/lib/subscription";
 import { getCheckoutUrl } from "@/lib/gumroad";
 
 /**
@@ -11,7 +11,8 @@ import { getCheckoutUrl } from "@/lib/gumroad";
  * plan, with their Clerk account email pre-filled — the verified webhook
  * (app/api/webhooks/gumroad) attributes a completed payment back to this
  * account by matching that email server-side. Nothing is granted
- * client-side anymore.
+ * client-side anymore; openCheckoutAndWatch polls in the background and
+ * closes the tab once the credit actually lands.
  */
 export function SubscribeCta({
   plan,
@@ -24,17 +25,20 @@ export function SubscribeCta({
 }) {
   const { isSignedIn, user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress;
+  const [waiting, setWaiting] = useState(false);
 
   if (isSignedIn && email) {
     return (
-      <a
-        href={getCheckoutUrl(plan, email)}
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
         className={className}
+        disabled={waiting}
+        onClick={() => {
+          setWaiting(true);
+          openCheckoutAndWatch(getCheckoutUrl(plan, email), () => setWaiting(false));
+        }}
       >
-        {children}
-      </a>
+        {waiting ? "Ödeme bekleniyor..." : children}
+      </button>
     );
   }
 
