@@ -29,8 +29,9 @@ export function SubscriptionPanel() {
     // granted by the verified webhook once the payment actually
     // completes, not here.
     const pendingPlan = consumePendingPlan();
-    if (pendingPlan && user) {
-      window.location.href = getCheckoutUrl(pendingPlan, user.id);
+    const email = user?.primaryEmailAddress?.emailAddress;
+    if (pendingPlan && email) {
+      window.location.href = getCheckoutUrl(pendingPlan, email);
       return;
     }
 

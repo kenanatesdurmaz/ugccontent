@@ -37,17 +37,17 @@ export function permalinkToPlan(permalink: string): PlanId | null {
 
 /**
  * Builds the checkout URL a signed-in user is redirected to for a plan.
- * `user_id` is an arbitrary query param — Gumroad echoes any extra query
- * params on the purchase link back in the sale's `url_params` field, which
- * is how the webhook maps a completed sale back to a Clerk user without
- * requiring the buyer to type anything.
+ * Pre-fills the buyer's email (verified: a real sale's payload has no
+ * generic "url_params" passthrough field, so a made-up query param like
+ * `user_id` is silently dropped) — the webhook instead maps a completed
+ * sale back to a Clerk account by looking up this email server-side.
  */
-export function getCheckoutUrl(plan: PlanId, clerkUserId: string): string {
+export function getCheckoutUrl(plan: PlanId, email: string): string {
   const base = GUMROAD_CHECKOUT_URLS[plan];
   if (!base) throw new Error(`No Gumroad checkout URL configured for plan "${plan}"`);
   const url = new URL(base);
   url.searchParams.set("wanted", "true");
-  url.searchParams.set("user_id", clerkUserId);
+  url.searchParams.set("email", email);
   return url.toString();
 }
 
@@ -55,12 +55,12 @@ export type GumroadSale = {
   sale_id: string;
   product_permalink: string;
   email: string;
+  purchase_email?: string;
   price: number; // cents
   currency: string;
   subscription_id?: string;
   recurrence?: string;
-  url_params?: Record<string, string>;
-  test: boolean;
+  test?: boolean;
   [key: string]: unknown;
 };
 

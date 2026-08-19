@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
+import { clerkClient } from "@clerk/nextjs/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { permalinkToPlan, verifyGumroadSale } from "@/lib/gumroad";
 import { getSubscription, setSubscriptionPlan } from "@/lib/subscription-server";
 import { notifySubscriptionCreated } from "@/lib/admin-notifications-server";
 import { testModeAllowed } from "@/lib/app-settings-server";
 import { PLANS } from "@/lib/plans";
+
+/**
+ * Finds the Clerk account a Gumroad sale belongs to by email — a real
+ * sale's payload has no generic passthrough field for a custom user id, so
+ * matching on the buyer's email (pre-filled from the Clerk account on
+ * checkout, see getCheckoutUrl) is what's actually reliable here.
+ */
+async function findClerkUserByEmail(email: string): Promise<string | null> {
+  const client = await clerkClient();
+  const { data } = await client.users.getUserList({ emailAddress: [email] });
+  if (data.length !== 1) return null;
+  return data[0].id;
+}
 
 /**
  * Gumroad "Ping" webhook — fires on every sale, including each recurring
@@ -39,7 +53,8 @@ export async function POST(req: NextRequest) {
   }
 
   const plan = permalinkToPlan(sale.product_permalink);
-  const clerkUserId = sale.url_params?.user_id ?? null;
+  const buyerEmail = sale.purchase_email ?? sale.email;
+  const clerkUserId = buyerEmail ? await findClerkUserByEmail(buyerEmail) : null;
 
   const supabase = getSupabaseAdmin();
   const { error: insertError } = await supabase.from("gumroad_sales").insert({
@@ -67,7 +82,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, skipped: "unknown_product" });
   }
   if (!clerkUserId) {
-    console.error("Gumroad sale missing user_id url_param — cannot attribute", saleId);
+    console.error("Gumroad sale email didn't match exactly one Clerk account", buyerEmail, saleId);
     return NextResponse.json({ ok: true, skipped: "unattributed" });
   }
 

@@ -8,10 +8,10 @@ import { getCheckoutUrl } from "@/lib/gumroad";
 
 /**
  * "Subscribing" now sends the user to the real Gumroad checkout for the
- * plan, with their Clerk user id attached as a URL param — Gumroad echoes
- * it back in the sale's url_params, which is how the verified webhook
- * (app/api/webhooks/gumroad) attributes a completed payment to this
- * account and grants credits. Nothing is granted client-side anymore.
+ * plan, with their Clerk account email pre-filled — the verified webhook
+ * (app/api/webhooks/gumroad) attributes a completed payment back to this
+ * account by matching that email server-side. Nothing is granted
+ * client-side anymore.
  */
 export function SubscribeCta({
   plan,
@@ -23,10 +23,11 @@ export function SubscribeCta({
   children: ReactNode;
 }) {
   const { isSignedIn, user } = useUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
 
-  if (isSignedIn) {
+  if (isSignedIn && email) {
     return (
-      <a href={getCheckoutUrl(plan, user.id)} className={className}>
+      <a href={getCheckoutUrl(plan, email)} className={className}>
         {children}
       </a>
     );
