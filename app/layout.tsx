@@ -3,6 +3,7 @@ import { Onest } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/Navbar";
 import { DialogProvider } from "@/components/DialogProvider";
+import { authLocalization } from "@/lib/clerk-appearance";
 import "./globals.css";
 
 const onest = Onest({
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <ClerkProvider
+      localization={authLocalization}
       appearance={{
         variables: {
           colorPrimary: "#0071e3",
