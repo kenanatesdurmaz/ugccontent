@@ -27,7 +27,12 @@ export function SubscribeCta({
 
   if (isSignedIn && email) {
     return (
-      <a href={getCheckoutUrl(plan, email)} className={className}>
+      <a
+        href={getCheckoutUrl(plan, email)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+      >
         {children}
       </a>
     );

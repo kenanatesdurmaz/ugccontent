@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { permalinkToPlan, verifyGumroadSale } from "@/lib/gumroad";
+import { productIdToPlan, verifyGumroadSale } from "@/lib/gumroad";
 import { getSubscription, setSubscriptionPlan } from "@/lib/subscription-server";
 import { notifySubscriptionCreated } from "@/lib/admin-notifications-server";
 import { testModeAllowed } from "@/lib/app-settings-server";
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, skipped: "test_sale" });
   }
 
-  const plan = permalinkToPlan(sale.product_permalink);
+  const plan = productIdToPlan(sale.product_id);
   const buyerEmail = sale.purchase_email ?? sale.email;
   const clerkUserId = buyerEmail ? await findClerkUserByEmail(buyerEmail) : null;
 
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!plan) {
-    console.error("Gumroad sale for unrecognized product", sale.product_permalink, saleId);
+    console.error("Gumroad sale for unrecognized product", sale.product_id, saleId);
     return NextResponse.json({ ok: true, skipped: "unknown_product" });
   }
   if (!clerkUserId) {

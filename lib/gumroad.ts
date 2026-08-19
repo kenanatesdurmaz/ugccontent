@@ -11,28 +11,22 @@ export const GUMROAD_CHECKOUT_URLS: Record<PlanId, string> = {
 };
 
 /**
- * Extra permalink -> plan aliases, for products whose checkout URL slug
- * (above) doesn't match the permalink Gumroad's Sales API actually reports
- * for `product_permalink`. Confirmed via a real "Send test ping": Starter's
- * checkout link reads "/l/Starter" but the sale itself still reports the
- * original auto-generated "fzjfi" permalink.
+ * Gumroad product id (from GET /v2/products, the `id` field) per plan —
+ * NOT the permalink. The permalink is unreliable: a sale's
+ * `product_permalink` field reports the product's original/legacy slug
+ * (e.g. "fzjfi", "kcdms") even after the custom permalink shown in the
+ * checkout URL was changed to "Starter"/"Creator"/etc, so matching on it
+ * broke twice. `product_id` is stable and matches the sale's `product_id`
+ * field exactly.
  */
-const PERMALINK_ALIASES: Partial<Record<PlanId, string[]>> = {
-  starter: ["fzjfi"],
+const PRODUCT_ID_TO_PLAN: Record<string, PlanId> = {
+  "BNGAhUhzwGV_NkdQf4xigQ==": "starter",
+  "idQ6iyZSrHB0TAFqMEhR_A==": "creator",
+  "IXjFqjDwMNN7EJ5nb4Yt1w==": "pro",
 };
 
-/** Reverse lookup: Gumroad product permalink (the `/l/<permalink>` slug) -> our plan id. */
-const PERMALINK_TO_PLAN: Record<string, PlanId> = Object.fromEntries([
-  ...Object.entries(GUMROAD_CHECKOUT_URLS)
-    .filter(([, url]) => url)
-    .map(([plan, url]) => [new URL(url).pathname.split("/").pop()!, plan as PlanId]),
-  ...Object.entries(PERMALINK_ALIASES).flatMap(([plan, aliases]) =>
-    aliases!.map((alias) => [alias, plan as PlanId])
-  ),
-]);
-
-export function permalinkToPlan(permalink: string): PlanId | null {
-  return PERMALINK_TO_PLAN[permalink] ?? null;
+export function productIdToPlan(productId: string): PlanId | null {
+  return PRODUCT_ID_TO_PLAN[productId] ?? null;
 }
 
 /**
@@ -53,7 +47,7 @@ export function getCheckoutUrl(plan: PlanId, email: string): string {
 
 export type GumroadSale = {
   sale_id: string;
-  product_permalink: string;
+  product_id: string;
   email: string;
   purchase_email?: string;
   price: number; // cents

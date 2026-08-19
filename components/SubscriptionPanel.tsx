@@ -31,8 +31,7 @@ export function SubscriptionPanel() {
     const pendingPlan = consumePendingPlan();
     const email = user?.primaryEmailAddress?.emailAddress;
     if (pendingPlan && email) {
-      window.location.href = getCheckoutUrl(pendingPlan, email);
-      return;
+      window.open(getCheckoutUrl(pendingPlan, email), "_blank", "noopener,noreferrer");
     }
 
     async function init() {
