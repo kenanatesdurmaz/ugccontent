@@ -29,7 +29,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       appearance={{
         variables: {
           colorPrimary: "#0071e3",
+          // Clerk's own UserButton dropdown / UserProfile modal is fixed
+          // light regardless of the site's dark-mode toggle (see
+          // AccountSubscriptionPage.tsx) — colorText/colorInputText are
+          // pinned to match, otherwise unset text falls back to inherited
+          // CSS and picks up --ink, which goes near-white in dark mode
+          // and disappears against this always-white background.
           colorBackground: "#ffffff",
+          colorForeground: "#1d1d1f",
+          colorMutedForeground: "#6e6e73",
+          colorInput: "#ffffff",
+          colorInputForeground: "#1d1d1f",
           fontFamily: "var(--font-onest)",
           borderRadius: "12px",
         },

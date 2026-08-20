@@ -178,20 +178,18 @@ export const de: Dictionary = {
   },
   accountSubscription: {
     cancelConfirm:
-      "Möchtest du dein Abo wirklich kündigen? Du kannst es bis zum Ende deines aktuellen Zeitraums weiter nutzen. Hinweis: Das stoppt nur die Verlängerung hier — Gumroad bucht weiterhin ab, wenn du nicht auch dort kündigst. Wir öffnen dafür deine Gumroad-Bibliothek in einem neuen Tab.",
+      "Abo kündigen? Wir öffnen deine Gumroad-Bibliothek, damit du es dort abschließt — nur so wird die Abbuchung wirklich gestoppt. Diese Seite zeigt \"gekündigt\", sobald Gumroad das bestätigt.",
     cancelTitle: "Abo kündigen",
     confirmCancel: "Ja, kündigen",
     noActiveSubscription: "Du hast kein aktives Abo.",
     activePlan: "Aktiver Plan",
     creditsRemaining: (used, total) => `${used} / ${total} Credits übrig`,
     cancelledMessage: (date) =>
-      `Dein Abo wurde hier gekündigt. Es bleibt bis zum ${date} aktiv und wird danach nicht verlängert — Gumroad bucht aber weiter ab, bis du auch dort kündigst.`,
-    resume: "Kündigung rückgängig machen",
+      `Gekündigt — von Gumroad bestätigt. Bleibt aktiv bis zum ${date} und wird danach nicht verlängert.`,
     nextRenewal: (date) => `Nächste Verlängerung: ${date}`,
     cancelButton: "Abo kündigen",
     finePrint: (date) =>
-      `Wenn du kündigst, bleibt dein Plan bis zum Ende deines bezahlten Zeitraums (${date}) aktiv und verlängert sich hier nicht mehr — das kündigt aber nicht die Abbuchung bei Gumroad.`,
-    gumroadNotice: "Wir können die Gumroad-Abbuchung nicht für dich kündigen — die Gumroad-API erlaubt das nicht. Wir haben deine Gumroad-Bibliothek in einem neuen Tab geöffnet; kündige die Mitgliedschaft dort, um die Abbuchung zu stoppen (oder nutze den Link in deiner Gumroad-Quittung).",
+      `Kündigen öffnet deine Gumroad-Bibliothek — hier ändert sich nichts, bis du es dort abschließt. Dein Plan bleibt so oder so bis zum ${date} aktiv.`,
     gumroadLink: "Gumroad-Bibliothek öffnen",
   },
   toast: {

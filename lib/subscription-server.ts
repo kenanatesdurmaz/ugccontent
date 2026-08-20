@@ -123,9 +123,13 @@ export async function setSubscriptionPlan(userId: string, plan: PlanId) {
 }
 
 /**
- * Cancels at the end of the current (already paid for) period — the
- * subscription and its remaining credits stay usable until `renews_at`,
- * it just won't roll over into a new cycle.
+ * Marks cancel-at-period-end — the subscription and its remaining
+ * credits stay usable until `renews_at`, it just won't roll over into a
+ * new cycle. Only called from the Gumroad webhook's "cancellation" ping
+ * handler (app/api/webhooks/gumroad/route.ts), once Gumroad confirms the
+ * buyer actually cancelled there — never directly from a user action,
+ * since Gumroad's API has no way for us to cancel it ourselves and this
+ * flag is what the UI shows as "cancelled".
  */
 export async function cancelSubscription(userId: string) {
   const supabase = getSupabaseAdmin();
@@ -136,7 +140,12 @@ export async function cancelSubscription(userId: string) {
   if (error) throw new Error(error.message);
 }
 
-/** Undoes a pending cancellation, as long as the period hasn't ended yet. */
+/**
+ * Undoes a pending cancellation, as long as the period hasn't ended yet.
+ * Only called from the Gumroad webhook's "subscription_restarted" ping
+ * handler — see cancelSubscription's comment for why this isn't a
+ * user-facing action.
+ */
 export async function resumeSubscription(userId: string) {
   const supabase = getSupabaseAdmin();
   const { error } = await supabase

@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { productIdToPlan, verifyGumroadSale } from "@/lib/gumroad";
-import { getSubscription, setSubscriptionPlan } from "@/lib/subscription-server";
+import { productIdToPlan, verifyGumroadSale, verifyGumroadSubscriber } from "@/lib/gumroad";
+import {
+  cancelSubscription,
+  getSubscription,
+  resumeSubscription,
+  setSubscriptionPlan,
+} from "@/lib/subscription-server";
 import { notifySubscriptionCreated } from "@/lib/admin-notifications-server";
 import { testModeAllowed } from "@/lib/app-settings-server";
 import { PLANS } from "@/lib/plans";
@@ -21,23 +26,119 @@ async function findClerkUserByEmail(email: string): Promise<string | null> {
 }
 
 /**
- * Gumroad "Ping" webhook — fires on every sale, including each recurring
- * membership charge. Gumroad pings aren't signed, so authenticity comes
- * from re-fetching the sale server-to-server via our access token
- * (verifyGumroadSale) rather than trusting the posted form body directly.
- *
+ * Looks up which Clerk account a Gumroad subscription belongs to via the
+ * gumroad_sales log (populated by every sale ping) — the
+ * cancellation/subscription_restarted pings identify the subscription
+ * only by subscription_id, with no buyer email to match on directly.
+ */
+async function findClerkUserBySubscriptionId(subscriptionId: string): Promise<string | null> {
+  const supabase = getSupabaseAdmin();
+  const { data } = await supabase
+    .from("gumroad_sales")
+    .select("clerk_user_id")
+    .eq("gumroad_subscription_id", subscriptionId)
+    .not("clerk_user_id", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data?.clerk_user_id as string | undefined) ?? null;
+}
+
+/**
+ * Gumroad "Ping" webhook, reused for multiple resource_subscription event
+ * types (see app/api/webhooks/gumroad/route.ts registration notes below):
+ * sale pings identify themselves via sale_id, cancellation/
+ * subscription_restarted pings via subscription_id plus their own marker
+ * field. None of these are signed, so every branch re-fetches the real
+ * state server-to-server rather than trusting the posted body.
+ */
+export async function POST(req: NextRequest) {
+  const form = await req.formData().catch(() => null);
+  if (!form) {
+    return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+  }
+
+  const saleId = form.get("sale_id")?.toString();
+  if (saleId) {
+    return handleSalePing(saleId);
+  }
+
+  const subscriptionId = form.get("subscription_id")?.toString();
+  if (subscriptionId && form.get("cancelled_at")) {
+    return handleCancellationPing(subscriptionId);
+  }
+  if (subscriptionId && form.get("restarted_at")) {
+    return handleRestartPing(subscriptionId);
+  }
+
+  // Some other resource_subscription event we're not registered for /
+  // don't act on (e.g. subscription_updated) — ack so Gumroad stops
+  // retrying instead of treating it as a failure.
+  return NextResponse.json({ ok: true, skipped: "unhandled_resource" });
+}
+
+/**
+ * A real Gumroad cancellation confirmed via re-fetch — this is the only
+ * place cancelSubscription() gets called, so the UI's "cancelled" state
+ * only ever reflects what actually happened on Gumroad's side.
+ */
+async function handleCancellationPing(subscriptionId: string) {
+  let subscriber;
+  try {
+    subscriber = await verifyGumroadSubscriber(subscriptionId);
+  } catch (err) {
+    console.error("Gumroad subscriber verification failed", err);
+    return NextResponse.json({ error: "Verification failed" }, { status: 502 });
+  }
+
+  if (!subscriber.cancelled_at) {
+    // Ping fired but the re-fetched subscriber isn't actually cancelled
+    // (e.g. already restarted since) — nothing to do.
+    return NextResponse.json({ ok: true, skipped: "not_cancelled" });
+  }
+
+  const clerkUserId = await findClerkUserBySubscriptionId(subscriptionId);
+  if (!clerkUserId) {
+    console.error("Gumroad cancellation for unattributed subscription", subscriptionId);
+    return NextResponse.json({ ok: true, skipped: "unattributed" });
+  }
+
+  await cancelSubscription(clerkUserId);
+  return NextResponse.json({ ok: true });
+}
+
+/** Undoes cancel_at_period_end once Gumroad confirms the membership is alive again. */
+async function handleRestartPing(subscriptionId: string) {
+  let subscriber;
+  try {
+    subscriber = await verifyGumroadSubscriber(subscriptionId);
+  } catch (err) {
+    console.error("Gumroad subscriber verification failed", err);
+    return NextResponse.json({ error: "Verification failed" }, { status: 502 });
+  }
+
+  if (subscriber.status !== "alive") {
+    return NextResponse.json({ ok: true, skipped: "not_alive" });
+  }
+
+  const clerkUserId = await findClerkUserBySubscriptionId(subscriptionId);
+  if (!clerkUserId) {
+    console.error("Gumroad restart for unattributed subscription", subscriptionId);
+    return NextResponse.json({ ok: true, skipped: "unattributed" });
+  }
+
+  await resumeSubscription(clerkUserId);
+  return NextResponse.json({ ok: true });
+}
+
+/**
+ * Fires on every sale, including each recurring membership charge.
  * Credits are granted additively per real charge (setSubscriptionPlan is
  * already additive) — this intentionally does NOT touch the existing
  * calendar-based auto-rollover in getSubscription(); the two can grant
  * independently of each other until that's reconciled on purpose.
  */
-export async function POST(req: NextRequest) {
-  const form = await req.formData().catch(() => null);
-  const saleId = form?.get("sale_id")?.toString();
-  if (!saleId) {
-    return NextResponse.json({ error: "Missing sale_id" }, { status: 400 });
-  }
-
+async function handleSalePing(saleId: string) {
   let sale;
   try {
     sale = await verifyGumroadSale(saleId);

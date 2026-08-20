@@ -128,11 +128,9 @@ export type Dictionary = {
     activePlan: string;
     creditsRemaining: (used: string, total: string) => string;
     cancelledMessage: (date: string) => string;
-    resume: string;
     nextRenewal: (date: string) => string;
     cancelButton: string;
     finePrint: (date: string) => string;
-    gumroadNotice: string;
     gumroadLink: string;
   };
   toast: {

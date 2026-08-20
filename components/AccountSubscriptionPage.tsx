@@ -14,13 +14,20 @@ type SubscriptionState = {
   cancelAtPeriodEnd: boolean;
 } | null;
 
-/** Custom page rendered inside Clerk's "Manage account" (UserProfile) modal. */
+/**
+ * Custom page rendered inside Clerk's "Manage account" (UserProfile)
+ * modal. That modal is permanently light-themed (see ClerkProvider's
+ * colorBackground in app/layout.tsx) regardless of the site's own
+ * light/dark toggle, so this deliberately uses fixed light colors instead
+ * of the site's theme-reactive CSS vars — using --ink etc. here made
+ * everything unreadable in dark mode (text picking up the dark-mode
+ * color while still sitting on Clerk's fixed white background).
+ */
 export function AccountSubscriptionPage() {
   const { confirm } = useDialog();
   const { t, bcp47 } = useLanguage();
   const [subscription, setSubscription] = useState<SubscriptionState>(null);
   const [loaded, setLoaded] = useState(false);
-  const [working, setWorking] = useState(false);
 
   async function refresh() {
     const res = await fetch("/api/subscription");
@@ -36,6 +43,10 @@ export function AccountSubscriptionPage() {
     refresh();
   }, []);
 
+  function openGumroadLibrary() {
+    window.open("https://app.gumroad.com/library", "_blank", "noopener,noreferrer");
+  }
+
   async function handleCancel() {
     const ok = await confirm(t.accountSubscription.cancelConfirm, {
       title: t.accountSubscription.cancelTitle,
@@ -43,32 +54,21 @@ export function AccountSubscriptionPage() {
       danger: true,
     });
     if (!ok) return;
-    setWorking(true);
-    await fetch("/api/subscription/cancel", { method: "POST" });
-    await refresh();
-    window.dispatchEvent(new Event("subscription-changed"));
-    setWorking(false);
-    // We can't cancel the actual Gumroad charge server-side (their API has
-    // no seller-side cancel endpoint) — opening this for the user turns
-    // "cancel here, then remember to also cancel on Gumroad" into one
-    // motion instead of two. The visible link below is the fallback in
-    // case the popup gets blocked.
-    window.open("https://app.gumroad.com/library", "_blank", "noopener,noreferrer");
-  }
-
-  async function handleResume() {
-    setWorking(true);
-    await fetch("/api/subscription/resume", { method: "POST" });
-    await refresh();
-    window.dispatchEvent(new Event("subscription-changed"));
-    setWorking(false);
+    // Gumroad's API has no seller-side cancel endpoint, so the actual
+    // cancellation can only happen on Gumroad's own site. This
+    // deliberately does NOT set any "cancelled" state here — that comes
+    // only from Gumroad's cancellation webhook (see
+    // app/api/webhooks/gumroad/route.ts), once it's confirmed there, so
+    // this page never shows "cancelled" for something that didn't
+    // actually happen.
+    openGumroadLibrary();
   }
 
   if (!loaded) return null;
 
   if (!subscription) {
     return (
-      <div className="flex flex-col gap-2 p-4 text-[14px] text-[var(--ink-secondary)]">
+      <div className="flex flex-col gap-2 p-4 text-[14px] text-[#6e6e73]">
         {t.accountSubscription.noActiveSubscription}
       </div>
     );
@@ -84,13 +84,13 @@ export function AccountSubscriptionPage() {
   return (
     <div className="flex flex-col gap-5 p-1">
       <div>
-        <p className="text-[12px] font-medium uppercase tracking-wide text-[var(--ink-tertiary)]">
+        <p className="text-[12px] font-medium uppercase tracking-wide text-[#86868b]">
           {t.accountSubscription.activePlan}
         </p>
-        <h3 className="text-lg font-semibold tracking-tight text-[var(--ink)]">
+        <h3 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">
           {planInfo.name}
         </h3>
-        <p className="mt-1 text-[13px] text-[var(--ink-secondary)]">
+        <p className="mt-1 text-[13px] text-[#6e6e73]">
           {t.accountSubscription.creditsRemaining(
             formatCredits(subscription.creditsRemaining),
             formatCredits(subscription.creditsTotal)
@@ -99,44 +99,29 @@ export function AccountSubscriptionPage() {
       </div>
 
       {subscription.cancelAtPeriodEnd ? (
-        <div className="flex flex-col gap-3 rounded-2xl bg-[var(--bg-secondary)] p-4">
-          <p className="text-[13px] text-[var(--ink-secondary)]">
+        <div className="flex flex-col gap-3 rounded-2xl bg-[#f5f5f7] p-4">
+          <p className="text-[13px] text-[#6e6e73]">
             {t.accountSubscription.cancelledMessage(renewsDate)}
           </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={handleResume}
-              disabled={working}
-              className="pill-black rounded-full px-4 py-2 text-[13px] font-medium disabled:opacity-40"
-            >
-              {t.accountSubscription.resume}
-            </button>
-            <a
-              href="https://app.gumroad.com/library"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full px-4 py-2 text-[13px] font-medium text-[var(--accent)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-elevated)]"
-            >
-              {t.accountSubscription.gumroadLink}
-            </a>
-          </div>
-          <p className="text-[11px] text-[var(--ink-tertiary)]">
-            {t.accountSubscription.gumroadNotice}
-          </p>
+          <button
+            onClick={openGumroadLibrary}
+            className="self-start rounded-full bg-[#1d1d1f] px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black"
+          >
+            {t.accountSubscription.gumroadLink}
+          </button>
         </div>
       ) : (
-        <div className="flex flex-col gap-3 rounded-2xl bg-[var(--bg-secondary)] p-4">
-          <p className="text-[13px] text-[var(--ink-secondary)]">
+        <div className="flex flex-col gap-3 rounded-2xl bg-[#f5f5f7] p-4">
+          <p className="text-[13px] text-[#6e6e73]">
             {t.accountSubscription.nextRenewal(renewsDate)}
           </p>
           <button
             onClick={handleCancel}
-            disabled={working}
-            className="self-start rounded-full px-4 py-2 text-[13px] font-medium text-[var(--red)] ring-1 ring-[var(--line)] transition-colors hover:bg-[var(--bg-elevated)] disabled:opacity-40"
+            className="self-start rounded-full px-4 py-2 text-[13px] font-medium text-[#d93025] ring-1 ring-black/10 transition-colors hover:bg-white"
           >
             {t.accountSubscription.cancelButton}
           </button>
-          <p className="text-[11px] text-[var(--ink-tertiary)]">
+          <p className="text-[11px] text-[#86868b]">
             {t.accountSubscription.finePrint(renewsDate)}
           </p>
         </div>

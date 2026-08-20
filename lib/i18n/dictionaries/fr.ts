@@ -178,20 +178,18 @@ export const fr: Dictionary = {
   },
   accountSubscription: {
     cancelConfirm:
-      "Voulez-vous vraiment annuler votre abonnement ? Vous pourrez continuer à l'utiliser jusqu'à la fin de votre période payée en cours. Remarque : cela arrête juste le renouvellement ici — Gumroad continuera de vous facturer si vous n'annulez pas aussi là-bas. Nous ouvrirons votre Bibliothèque Gumroad dans un nouvel onglet pour ça.",
+      "Annuler votre abonnement ? Nous ouvrirons votre Bibliothèque Gumroad pour que vous terminiez là-bas — c'est le seul moyen d'arrêter vraiment les prochains prélèvements. Cette page indiquera \"annulé\" dès que Gumroad le confirmera.",
     cancelTitle: "Annuler l'abonnement",
     confirmCancel: "Oui, annuler",
     noActiveSubscription: "Vous n'avez pas d'abonnement actif.",
     activePlan: "Forfait actif",
     creditsRemaining: (used, total) => `${used} / ${total} crédits restants`,
     cancelledMessage: (date) =>
-      `Votre abonnement a été annulé ici. Il restera actif jusqu'au ${date}, puis ne sera pas renouvelé — mais Gumroad continuera de vous facturer tant que vous n'annulez pas aussi là-bas.`,
-    resume: "Annuler la résiliation",
+      `Annulé — confirmé par Gumroad. Reste actif jusqu'au ${date}, puis ne sera pas renouvelé.`,
     nextRenewal: (date) => `Prochain renouvellement : ${date}`,
     cancelButton: "Annuler l'abonnement",
     finePrint: (date) =>
-      `Si vous annulez, votre forfait reste actif jusqu'à la fin de votre période payée (${date}) et ne se renouvellera pas ici — mais cela n'annule pas le prélèvement Gumroad.`,
-    gumroadNotice: "Nous ne pouvons pas annuler le prélèvement Gumroad à votre place — l'API de Gumroad ne le permet pas. Nous avons ouvert votre Bibliothèque Gumroad dans un nouvel onglet ; annulez l'abonnement là-bas pour arrêter d'être facturé (ou utilisez le lien dans votre reçu Gumroad).",
+      `Annuler ouvre votre Bibliothèque Gumroad — rien ne change ici tant que vous ne terminez pas là-bas. Votre forfait reste actif jusqu'au ${date} de toute façon.`,
     gumroadLink: "Ouvrir la Bibliothèque Gumroad",
   },
   toast: {

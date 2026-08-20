@@ -76,3 +76,42 @@ export async function verifyGumroadSale(saleId: string): Promise<GumroadSale> {
   }
   return data.sale as GumroadSale;
 }
+
+export type GumroadSubscriber = {
+  id: string;
+  status:
+    | "alive"
+    | "payment_method_update_required"
+    | "pending_cancellation"
+    | "pending_failure"
+    | "failed_payment"
+    | "fixed_subscription_period_ended"
+    | "cancelled";
+  cancelled_at: string | null;
+  ended_at: string | null;
+  [key: string]: unknown;
+};
+
+/**
+ * Re-fetches a subscriber from Gumroad's own API, same reasoning as
+ * verifyGumroadSale — the "cancellation"/"subscription_restarted"
+ * resource_subscription pings (see app/api/webhooks/gumroad/route.ts)
+ * aren't signed either, so the raw POST body is only a "go check now"
+ * trigger; this server-to-server call is what actually decides whether
+ * the subscription is cancelled.
+ */
+export async function verifyGumroadSubscriber(subscriptionId: string): Promise<GumroadSubscriber> {
+  const token = process.env.GUMROAD_ACCESS_TOKEN;
+  if (!token) throw new Error("GUMROAD_ACCESS_TOKEN is not set");
+
+  const res = await fetch(
+    `https://api.gumroad.com/v2/subscribers/${encodeURIComponent(subscriptionId)}?access_token=${encodeURIComponent(token)}`
+  );
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(`Gumroad subscriber verification failed: ${JSON.stringify(data)}`);
+  }
+  // Gumroad's own docs key this singular object under the plural
+  // "subscribers", not "subscriber" — verified against a real response.
+  return data.subscribers as GumroadSubscriber;
+}
