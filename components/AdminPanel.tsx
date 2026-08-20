@@ -27,20 +27,35 @@ type NotificationRow = {
   payload: { userEmail?: string; plan?: string };
 };
 
+type UserRow = {
+  id: string;
+  email: string | null;
+  name: string | null;
+  createdAt: string;
+  lastSignInAt: string | null;
+  plan: "starter" | "creator" | "pro" | null;
+  creditsUsed: number | null;
+  creditsGranted: number | null;
+  cancelAtPeriodEnd: boolean | null;
+};
+
 export function AdminPanel() {
   const { confirm, notify } = useDialog();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [testModeAllowed, setTestModeAllowed] = useState(true);
   const [logs, setLogs] = useState<LogRow[] | null>(null);
   const [notifications, setNotifications] = useState<NotificationRow[] | null>(null);
+  const [users, setUsers] = useState<UserRow[] | null>(null);
+  const [userCount, setUserCount] = useState<number | null>(null);
   const [working, setWorking] = useState(false);
   const [notifWorking, setNotifWorking] = useState(false);
 
   async function refresh() {
-    const [settingsRes, logsRes, notifRes] = await Promise.all([
+    const [settingsRes, logsRes, notifRes, usersRes] = await Promise.all([
       fetch("/api/admin/settings"),
       fetch("/api/admin/generations"),
       fetch("/api/admin/notifications"),
+      fetch("/api/admin/users"),
     ]);
     if (settingsRes.ok) {
       const data = await settingsRes.json();
@@ -54,6 +69,11 @@ export function AdminPanel() {
     if (notifRes.ok) {
       const data = await notifRes.json();
       setNotifications(data.notifications);
+    }
+    if (usersRes.ok) {
+      const data = await usersRes.json();
+      setUsers(data.users);
+      setUserCount(data.totalCount);
     }
   }
 
@@ -195,6 +215,58 @@ export function AdminPanel() {
             Test mode is disabled in this (production) environment.
           </p>
         )}
+      </div>
+
+      <div className="card-shadow flex flex-col gap-3 rounded-3xl bg-[var(--bg-secondary)] p-6">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-[15px] font-semibold text-[var(--ink)]">Users</h2>
+          {userCount !== null && (
+            <span className="text-[12px] text-[var(--ink-tertiary)]">
+              {userCount} total
+            </span>
+          )}
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] text-left text-[12px]">
+            <thead>
+              <tr className="text-[var(--ink-tertiary)]">
+                <th className="pb-2 pr-3 font-medium">Email</th>
+                <th className="pb-2 pr-3 font-medium">Name</th>
+                <th className="pb-2 pr-3 font-medium">Signed up</th>
+                <th className="pb-2 pr-3 font-medium">Last sign-in</th>
+                <th className="pb-2 pr-3 font-medium">Plan</th>
+                <th className="pb-2 font-medium">Credits</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users?.map((row) => (
+                <tr key={row.id} className="border-t border-[var(--line)]">
+                  <td className="py-2 pr-3 text-[var(--ink)]">{row.email ?? "—"}</td>
+                  <td className="py-2 pr-3 text-[var(--ink-secondary)]">{row.name ?? "—"}</td>
+                  <td className="py-2 pr-3 text-[var(--ink-secondary)]">
+                    {new Date(row.createdAt).toLocaleString("en-US")}
+                  </td>
+                  <td className="py-2 pr-3 text-[var(--ink-secondary)]">
+                    {row.lastSignInAt
+                      ? new Date(row.lastSignInAt).toLocaleString("en-US")
+                      : "Never"}
+                  </td>
+                  <td className="py-2 pr-3 text-[var(--ink-secondary)]">
+                    {row.plan ? `${row.plan}${row.cancelAtPeriodEnd ? " (cancelling)" : ""}` : "—"}
+                  </td>
+                  <td className="py-2 text-[var(--ink-secondary)]">
+                    {row.creditsUsed !== null && row.creditsGranted !== null
+                      ? `${row.creditsUsed} / ${row.creditsGranted}`
+                      : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {users !== null && users.length === 0 && (
+            <p className="py-4 text-[13px] text-[var(--ink-tertiary)]">No users yet.</p>
+          )}
+        </div>
       </div>
 
       <div className="card-shadow flex flex-col gap-3 rounded-3xl bg-[var(--bg-secondary)] p-6">
